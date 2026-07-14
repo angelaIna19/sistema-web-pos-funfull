@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="420" height="620" viewBox="0 0 420 620">
+  <rect width="420" height="620" fill="#fbf8f1"/>
+  <path d="M180 72h60v78c0 22 34 48 34 96v252c0 38-25 62-64 62s-64-24-64-62V246c0-48 34-74 34-96V72z" fill="#9b561f"/>
+  <rect x="182" y="46" width="56" height="64" rx="8" fill="#d6a23a"/>
+  <rect x="160" y="300" width="100" height="112" rx="8" fill="#111"/>
+  <text x="210" y="345" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700" fill="#f4b400">RON</text>
+  <text x="210" y="378" text-anchor="middle" font-family="Arial" font-size="18" fill="#fff">AÑEJO</text>
+  <text x="210" y="455" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700" fill="#111">750ML</text>
+</svg>
