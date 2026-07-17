@@ -3,12 +3,16 @@
 function mapProducto(row) {
   return {
     id: row.id,
+    codigo: row.codigo,
     nombre: row.nombre,
-    precio: Number(row.precio),
+    categoria: row.categoria,
+    marca: row.marca,
+    precioCompra: Number(row.precio_compra),
+    precioVenta: Number(row.precio_venta),
+    stock: Number(row.stock),
+    stockMinimo: Number(row.stock_minimo),
     imagen: row.imagen,
-    descripcion: row.descripcion,
-    disponible: row.disponible,
-    etiqueta: row.etiqueta,
+    estado: row.estado,
   };
 }
 
@@ -24,10 +28,21 @@ async function findById(id) {
 
 async function create(producto) {
   const result = await query(
-    `INSERT INTO productos (nombre, precio, imagen, descripcion, disponible, etiqueta)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO productos (codigo, nombre, categoria, marca, precio_compra, precio_venta, stock, stock_minimo, imagen, estado)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      RETURNING *`,
-    [producto.nombre, producto.precio, producto.imagen, producto.descripcion, producto.disponible, producto.etiqueta]
+    [
+      producto.codigo,
+      producto.nombre,
+      producto.categoria,
+      producto.marca,
+      producto.precioCompra,
+      producto.precioVenta,
+      producto.stock,
+      producto.stockMinimo,
+      producto.imagen,
+      producto.estado,
+    ]
   );
 
   return mapProducto(result.rows[0]);
@@ -36,10 +51,32 @@ async function create(producto) {
 async function update(id, producto) {
   const result = await query(
     `UPDATE productos
-     SET nombre = $1, precio = $2, imagen = $3, descripcion = $4, disponible = $5, etiqueta = $6, actualizado_en = CURRENT_TIMESTAMP
-     WHERE id = $7
+     SET codigo = $1,
+         nombre = $2,
+         categoria = $3,
+         marca = $4,
+         precio_compra = $5,
+         precio_venta = $6,
+         stock = $7,
+         stock_minimo = $8,
+         imagen = $9,
+         estado = $10,
+         actualizado_en = CURRENT_TIMESTAMP
+     WHERE id = $11
      RETURNING *`,
-    [producto.nombre, producto.precio, producto.imagen, producto.descripcion, producto.disponible, producto.etiqueta, id]
+    [
+      producto.codigo,
+      producto.nombre,
+      producto.categoria,
+      producto.marca,
+      producto.precioCompra,
+      producto.precioVenta,
+      producto.stock,
+      producto.stockMinimo,
+      producto.imagen,
+      producto.estado,
+      id,
+    ]
   );
 
   return result.rows[0] ? mapProducto(result.rows[0]) : null;

@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS usuarios_admin (
+CREATE TABLE IF NOT EXISTS usuarios_admin (
   id SERIAL PRIMARY KEY,
   usuario VARCHAR(80) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
@@ -8,12 +8,39 @@
 
 CREATE TABLE IF NOT EXISTS productos (
   id SERIAL PRIMARY KEY,
+  codigo VARCHAR(50) UNIQUE NOT NULL,
   nombre VARCHAR(160) NOT NULL,
-  precio NUMERIC(10, 2) NOT NULL CHECK (precio >= 0),
+  categoria VARCHAR(100) NOT NULL,
+  marca VARCHAR(100) NOT NULL,
+  precio_compra NUMERIC(10, 2) NOT NULL CHECK (precio_compra >= 0),
+  precio_venta NUMERIC(10, 2) NOT NULL CHECK (precio_venta >= 0),
+  stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
+  stock_minimo INTEGER NOT NULL DEFAULT 0 CHECK (stock_minimo >= 0),
   imagen TEXT NOT NULL,
-  descripcion TEXT NOT NULL,
-  disponible BOOLEAN NOT NULL DEFAULT true,
-  etiqueta VARCHAR(80),
+  estado BOOLEAN NOT NULL DEFAULT true,
   creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   actualizado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS categorias (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) UNIQUE NOT NULL,
+  descripcion TEXT,
+  estado BOOLEAN NOT NULL DEFAULT true,
+  creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  actualizado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS cajas (
+  id SERIAL PRIMARY KEY,
+  usuario_id INTEGER NOT NULL REFERENCES usuarios_admin(id),
+  monto_inicial NUMERIC(10, 2) NOT NULL CHECK (monto_inicial >= 0),
+  observacion TEXT,
+  estado VARCHAR(20) NOT NULL DEFAULT 'ABIERTA',
+  abierta_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  cerrada_en TIMESTAMP,
+  CONSTRAINT cajas_estado_check CHECK (estado IN ('ABIERTA', 'CERRADA'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS cajas_usuario_abierta_unica
+ON cajas (usuario_id)
+WHERE estado = 'ABIERTA';
