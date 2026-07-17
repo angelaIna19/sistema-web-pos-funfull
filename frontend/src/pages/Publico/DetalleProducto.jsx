@@ -33,6 +33,8 @@ export default function DetalleProducto() {
     );
   }
 
+  const precioVenta = Number(producto.precioVenta || 0);
+
   return (
     <main className="detalle-producto">
       <div className="detalle-imagen">
@@ -40,10 +42,13 @@ export default function DetalleProducto() {
       </div>
       <div className="detalle-info">
         <h2>{producto.nombre}</h2>
-        <p style={{ fontWeight: 700 }}>${producto.precio.toFixed(2)}</p>
-        <p>{producto.descripcion}</p>
-        <p style={{ color: producto.disponible ? "green" : "red" }}>
-          {producto.disponible ? "Disponible" : "No disponible"}
+        <p style={{ fontWeight: 700 }}>${precioVenta.toFixed(2)}</p>
+        <p><strong>Código:</strong> {producto.codigo}</p>
+        <p><strong>Categoría:</strong> {producto.categoria}</p>
+        <p><strong>Marca:</strong> {producto.marca}</p>
+        <p><strong>Stock disponible:</strong> {producto.stock}</p>
+        <p style={{ color: producto.estado ? "green" : "red" }}>
+          {producto.estado ? "Disponible" : "No disponible"}
         </p>
         <button onClick={() => navigate(-1)} style={{ marginTop: 12 }}>
           Volver al catálogo

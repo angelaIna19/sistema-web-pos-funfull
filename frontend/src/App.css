@@ -1,4 +1,4 @@
-﻿body {
+body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   color: #202124;
@@ -1195,4 +1195,2062 @@ footer {
 
 .login-access-note p {
   font-size: 9px;
+}
+
+/* Admin POS-style navbar */
+.admin-topbar {
+  width: 100%;
+  background: #202532;
+  color: #f5f7fb;
+  border-bottom: 1px solid #111827;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+
+.admin-topbar-row {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+}
+
+.admin-topbar-row.primary {
+  border-bottom: 1px solid #111827;
+}
+
+.admin-app-title,
+.admin-section-title,
+.admin-user-name,
+.admin-module-tabs,
+.admin-toolbar-actions,
+.admin-search-box {
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-app-title {
+  gap: 6px;
+  min-width: 126px;
+  font-weight: 700;
+}
+
+.admin-app-icon {
+  font-size: 18px;
+}
+
+.admin-module-tabs {
+  gap: 6px;
+}
+
+.admin-module-tabs a {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #101722;
+  border-radius: 3px;
+  background: #343a49;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.admin-module-tabs a.active {
+  background: #445f9c;
+}
+
+.admin-topbar-spacer {
+  flex: 1;
+  min-width: 80px;
+  min-height: 28px;
+  border: 1px solid #101722;
+  background: #3f69b8;
+}
+
+.admin-user-name {
+  color: #fff;
+  font-size: 12px;
+}
+
+.admin-user-badge {
+  width: 22px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #85a8ff;
+  border-radius: 3px;
+  background: #2b67bd;
+  color: #fff;
+  font-weight: 800;
+  position: relative;
+}
+
+.admin-user-badge::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  bottom: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2ee572;
+}
+
+.admin-topbar-row.secondary {
+  min-height: 38px;
+}
+
+.admin-new-button {
+  min-height: 28px;
+  padding: 0 11px;
+  border: 1px solid #8e5ea6;
+  border-radius: 4px;
+  background: #7d4c86;
+  color: #fff;
+  font-weight: 800;
+}
+
+.admin-section-title {
+  gap: 6px;
+  min-width: 250px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.admin-search-box {
+  flex: 1;
+  max-width: 520px;
+  min-height: 28px;
+  gap: 6px;
+  border: 1px solid #416a9b;
+  border-radius: 4px;
+  padding: 0 8px;
+  background: #111827;
+  color: #cbd5e1;
+}
+
+.admin-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 8px;
+  border-radius: 3px;
+  background: #2e3748;
+  color: #fff;
+  font-size: 12px;
+}
+
+.admin-search-box input {
+  min-width: 120px;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+}
+
+.admin-search-box input::placeholder {
+  color: #8f9bad;
+}
+
+.admin-toolbar-actions {
+  margin-left: auto;
+  gap: 6px;
+  color: #fff;
+}
+
+.admin-toolbar-actions button {
+  min-width: 28px;
+  min-height: 26px;
+  border: 1px solid #3c4658;
+  border-radius: 3px;
+  background: #2a3040;
+  color: #fff;
+  font-weight: 700;
+}
+
+.admin-toolbar-actions button:last-child {
+  padding: 0 10px;
+  background: #3a4456;
+}
+
+.admin-page {
+  max-width: 1440px;
+  padding-top: 24px;
+}
+
+@media (max-width: 900px) {
+  .admin-topbar-row {
+    flex-wrap: wrap;
+  }
+
+  .admin-topbar-spacer {
+    display: none;
+  }
+
+  .admin-section-title,
+  .admin-search-box {
+    min-width: 100%;
+    max-width: none;
+  }
+
+  .admin-toolbar-actions {
+    margin-left: 0;
+  }
+}
+
+/* Clean admin navbar: ignore covered blue blocks from reference */
+.clean-admin-topbar .admin-topbar-row.primary {
+  gap: 14px;
+}
+
+.clean-admin-topbar .admin-topbar-fill {
+  flex: 1;
+}
+
+.clean-admin-topbar .admin-topbar-spacer {
+  display: none;
+}
+
+.clean-admin-topbar .admin-module-tabs a.active {
+  background: #343a49;
+  border-color: #4b5563;
+}
+
+.clean-admin-topbar .admin-search-box {
+  max-width: 460px;
+}
+
+.clean-admin-topbar .admin-toolbar-actions span,
+.clean-admin-topbar .admin-toolbar-actions button[aria-label="Anterior"],
+.clean-admin-topbar .admin-toolbar-actions button[aria-label="Siguiente"] {
+  display: none;
+}
+
+/* Simple admin tab fix */
+.clean-admin-topbar .admin-module-tabs {
+  gap: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.clean-admin-topbar .admin-module-tabs a,
+.clean-admin-topbar .admin-module-tabs a.active {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid #23a7b8;
+  border-radius: 5px;
+  background: #004f5a;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.clean-admin-topbar .admin-module-tabs a:hover {
+  background: #066574;
+}
+
+/* Admin tab states: normal text, hover shade, active frame */
+.clean-admin-topbar .admin-module-tabs a {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.clean-admin-topbar .admin-module-tabs a:hover {
+  border-color: transparent;
+  background: #343a49;
+}
+
+.clean-admin-topbar .admin-module-tabs a.active,
+.clean-admin-topbar .admin-module-tabs a.active:hover {
+  border-color: #4b5563;
+  background: #343a49;
+}
+
+/* Final admin tab behavior: plain, hover, clicked/focused */
+.clean-admin-topbar .admin-module-tabs a,
+.clean-admin-topbar .admin-module-tabs a.active {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.clean-admin-topbar .admin-module-tabs a:hover {
+  border-color: transparent;
+  background: #343a49;
+}
+
+.clean-admin-topbar .admin-module-tabs a:active,
+.clean-admin-topbar .admin-module-tabs a:focus-visible {
+  border-color: #4b5563;
+  background: #343a49;
+  outline: none;
+}
+
+/* Admin dropdown menu for Productos */
+.clean-admin-topbar .admin-menu-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.clean-admin-topbar .admin-menu-trigger {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.clean-admin-topbar .admin-menu-trigger:hover,
+.clean-admin-topbar .admin-menu-item:focus-within .admin-menu-trigger {
+  background: #343a49;
+}
+
+.clean-admin-topbar .admin-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  padding: 6px;
+  border: 1px solid #3f4858;
+  border-radius: 6px;
+  background: #202532;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  z-index: 200;
+}
+
+.clean-admin-topbar .admin-menu-item:hover .admin-dropdown-menu,
+.clean-admin-topbar .admin-menu-item:focus-within .admin-dropdown-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.clean-admin-topbar .admin-dropdown-menu a {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 4px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.clean-admin-topbar .admin-dropdown-menu a:hover,
+.clean-admin-topbar .admin-dropdown-menu a:focus-visible {
+  background: #343a49;
+  outline: none;
+}
+
+/* Product submenu section shown after dropdown click */
+.clean-admin-topbar .admin-topbar-row.secondary {
+  min-height: 50px;
+  padding: 8px 16px;
+  gap: 8px;
+  background: #202532;
+}
+
+.clean-admin-topbar .admin-section-title {
+  min-width: 220px;
+  gap: 8px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.clean-admin-topbar .admin-new-button {
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+.clean-admin-topbar .admin-search-box {
+  max-width: 620px;
+  min-height: 42px;
+  margin-inline: auto;
+  font-size: 18px;
+}
+
+.clean-admin-topbar .admin-filter-chip {
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 18px;
+  background: transparent;
+}
+
+.clean-admin-topbar .admin-filter-close {
+  color: #9ca3af;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.clean-admin-topbar .admin-toolbar-actions span,
+.clean-admin-topbar .admin-toolbar-actions button[aria-label="Anterior"],
+.clean-admin-topbar .admin-toolbar-actions button[aria-label="Siguiente"] {
+  display: inline-flex;
+}
+
+.clean-admin-topbar .admin-toolbar-actions {
+  gap: 10px;
+  font-size: 22px;
+}
+
+.clean-admin-topbar .admin-toolbar-actions button {
+  min-width: 48px;
+  min-height: 42px;
+  font-size: 32px;
+  line-height: 1;
+}
+
+/* Admin module order buttons */
+.clean-admin-topbar .admin-module-tabs {
+  gap: 4px;
+}
+
+.clean-admin-topbar .admin-module-tabs > .admin-menu-trigger,
+.clean-admin-topbar .admin-menu-item > .admin-menu-trigger {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.clean-admin-topbar .admin-module-tabs > .admin-menu-trigger:hover,
+.clean-admin-topbar .admin-menu-item:hover > .admin-menu-trigger,
+.clean-admin-topbar .admin-menu-trigger:focus-visible {
+  background: #343a49;
+  outline: none;
+}
+
+/* Dropdown button options */
+.clean-admin-topbar .admin-dropdown-menu button {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.clean-admin-topbar .admin-dropdown-menu button:hover,
+.clean-admin-topbar .admin-dropdown-menu button:focus-visible {
+  background: #343a49;
+  outline: none;
+}
+
+/* Prevent multiple dropdowns from staying open */
+.clean-admin-topbar .admin-menu-item:hover .admin-dropdown-menu,
+.clean-admin-topbar .admin-menu-item:focus-within .admin-dropdown-menu {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+}
+
+.clean-admin-topbar .admin-dropdown-menu.is-open,
+.clean-admin-topbar .admin-menu-item:hover .admin-dropdown-menu.is-open,
+.clean-admin-topbar .admin-menu-item:focus-within .admin-dropdown-menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Wider admin dropdowns for full module option names */
+.clean-admin-topbar .admin-dropdown-menu {
+  min-width: 230px;
+}
+
+.clean-admin-topbar .admin-dropdown-menu a,
+.clean-admin-topbar .admin-dropdown-menu button {
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+
+/* Compact admin workspace */
+.admin-topbar-row {
+  min-height: 32px;
+  padding: 3px 10px;
+}
+
+.admin-app-title {
+  min-width: 160px;
+  font-size: 15px;
+}
+
+.admin-app-icon {
+  font-size: 16px;
+}
+
+.clean-admin-topbar .admin-module-tabs {
+  gap: 12px;
+}
+
+.clean-admin-topbar .admin-module-tabs > .admin-menu-trigger,
+.clean-admin-topbar .admin-menu-item > .admin-menu-trigger,
+.clean-admin-topbar .admin-menu-trigger {
+  min-height: 28px;
+  padding: 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.admin-user-name {
+  font-size: 13px;
+}
+
+.admin-user-badge {
+  width: 24px;
+  height: 28px;
+}
+
+.admin-page {
+  max-width: 1440px;
+  padding: 22px 24px 28px;
+}
+
+.admin-header {
+  margin-bottom: 18px;
+}
+
+.admin-header h2 {
+  font-size: 34px;
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+
+.admin-header p {
+  font-size: 17px;
+}
+
+.admin-layout {
+  grid-template-columns: minmax(290px, 420px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.producto-form,
+.productos-admin-list {
+  border-radius: 7px;
+  padding: 18px 22px;
+}
+
+.producto-form h3,
+.productos-admin-list h3 {
+  font-size: 22px;
+  margin-bottom: 22px;
+}
+
+.producto-form {
+  gap: 12px;
+}
+
+.producto-form label {
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.producto-form input,
+.producto-form textarea {
+  min-height: 38px;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 15px;
+}
+
+.producto-form textarea {
+  min-height: 72px;
+}
+
+.form-actions {
+  margin-top: 4px;
+}
+
+.admin-primary,
+.admin-secondary,
+.table-action,
+.table-danger {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 10px 8px;
+}
+
+.admin-table th {
+  font-size: 12px;
+}
+
+.admin-table td strong {
+  font-size: 17px;
+}
+
+.admin-table td span {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.admin-table td {
+  font-size: 16px;
+}
+
+.table-action,
+.table-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 78px;
+  margin: 2px 4px 2px 0;
+}
+
+.clean-admin-topbar .admin-topbar-row.secondary {
+  min-height: 38px;
+  padding: 5px 12px;
+}
+
+.clean-admin-topbar .admin-new-button {
+  min-height: 30px;
+  padding: 0 12px;
+  font-size: 15px;
+}
+
+.clean-admin-topbar .admin-section-title {
+  min-width: 170px;
+  font-size: 17px;
+}
+
+.clean-admin-topbar .admin-search-box {
+  max-width: 500px;
+  min-height: 32px;
+  font-size: 14px;
+}
+
+.clean-admin-topbar .admin-filter-chip {
+  min-height: 24px;
+  font-size: 14px;
+}
+
+.clean-admin-topbar .admin-filter-close {
+  font-size: 20px;
+}
+
+.clean-admin-topbar .admin-toolbar-actions {
+  font-size: 15px;
+}
+
+.clean-admin-topbar .admin-toolbar-actions button {
+  min-width: 32px;
+  min-height: 30px;
+  font-size: 22px;
+}
+
+/* Make admin navbar span the full viewport width */
+.admin-topbar {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Product schema update: compact real PostgreSQL fields */
+.producto-marca {
+  margin: -4px 0 8px;
+  color: #5f6368;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.products-table {
+  min-width: 980px;
+}
+
+.products-table th,
+.products-table td {
+  white-space: nowrap;
+}
+
+.products-table td:nth-child(2) {
+  min-width: 180px;
+  white-space: normal;
+}
+
+.products-table td:last-child {
+  min-width: 160px;
+}
+
+/* Compact product create/edit modal */
+.compact-products-page {
+  max-width: 1440px;
+  padding-top: 22px;
+}
+
+.compact-products-page .admin-header {
+  margin-bottom: 16px;
+}
+
+.admin-feedback {
+  margin: 0 0 12px;
+}
+
+.products-only-list {
+  width: 100%;
+  min-height: 260px;
+}
+
+.product-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.34);
+}
+
+.product-modal {
+  width: min(620px, 100%);
+  max-height: calc(100svh - 36px);
+  overflow: auto;
+  border: 1px solid #dfe4ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+}
+
+.product-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e7eaf0;
+  background: #fff;
+}
+
+.product-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.product-modal-header button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 5px;
+  background: #eef1f5;
+  color: #111827;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.product-modal-header button:hover {
+  background: #dde3eb;
+}
+
+.compact-product-form,
+.producto-form.compact-product-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  border: 0;
+  border-radius: 0;
+  padding: 14px;
+  box-shadow: none;
+}
+
+.compact-product-form label {
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.compact-product-form input {
+  min-height: 32px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.compact-product-form .full-field {
+  grid-column: 1 / -1;
+}
+
+.compact-product-form .checkbox-row {
+  min-height: 28px;
+  display: flex !important;
+  align-items: center;
+  gap: 8px !important;
+  font-size: 12px;
+}
+
+.compact-product-form .checkbox-row input {
+  width: 14px;
+  height: 14px;
+  min-height: 0;
+}
+
+.compact-product-form .form-actions {
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.compact-product-form .admin-primary,
+.compact-product-form .admin-secondary {
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+@media (max-width: 620px) {
+  .compact-product-form,
+  .producto-form.compact-product-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Product list / kanban view switch */
+.clean-admin-topbar .admin-toolbar-actions button.is-active {
+  border-color: #19c7d8;
+  background: #005763;
+  color: #fff;
+}
+
+.kanban-products-page {
+  max-width: none;
+  min-height: calc(100svh - 104px);
+  margin: 0;
+  padding: 18px 24px 32px;
+  background: #181b24;
+  color: #f8fafc;
+}
+
+.kanban-products-page .admin-header h2,
+.kanban-products-page .admin-header p,
+.products-kanban-panel h3 {
+  color: #f8fafc;
+}
+
+.products-kanban-panel {
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.products-kanban-panel > h3 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.products-kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 16px 24px;
+}
+
+.product-kanban-card {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  grid-template-areas:
+    "info media"
+    "actions actions";
+  gap: 10px 14px;
+  border: 1px solid #3b4252;
+  background: #252a36;
+  padding: 14px;
+  color: #f8fafc;
+}
+
+.product-kanban-info {
+  grid-area: info;
+  min-width: 0;
+}
+
+.product-kanban-info h4 {
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.product-kanban-info p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.product-kanban-info p strong {
+  color: #fff;
+  font-size: 17px;
+}
+
+.product-kanban-info small {
+  display: block;
+  margin-top: 3px;
+  color: #aeb7c7;
+  font-size: 12px;
+}
+
+.kanban-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  margin-top: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kanban-status.active {
+  background: rgba(46, 229, 114, 0.14);
+  color: #57f091;
+}
+
+.kanban-status.inactive {
+  background: rgba(248, 113, 113, 0.14);
+  color: #fca5a5;
+}
+
+.product-kanban-media {
+  grid-area: media;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.product-kanban-media img {
+  max-width: 100%;
+  max-height: 78px;
+  object-fit: contain;
+}
+
+.product-kanban-actions {
+  grid-area: actions;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid #343b4a;
+  padding-top: 8px;
+}
+
+.product-kanban-actions .table-action,
+.product-kanban-actions .table-danger {
+  min-height: 28px;
+  min-width: 70px;
+  font-size: 12px;
+}
+
+@media (max-width: 980px) {
+  .products-kanban-grid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .products-kanban-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.product-image-preview {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #dfe4ec;
+  border-radius: 7px;
+  padding: 7px 9px;
+  background: #f8fafc;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.product-image-preview img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.compact-product-form input[type="file"] {
+  min-height: 34px;
+  padding: 5px 8px;
+  background: #fff;
+}
+
+/* White compact kanban override */
+.kanban-products-page {
+  max-width: 1440px;
+  min-height: auto;
+  margin: 0 auto;
+  padding: 20px 24px 30px;
+  background: #fff;
+  color: #111827;
+}
+
+.kanban-products-page .admin-header {
+  margin-bottom: 12px;
+}
+
+.kanban-products-page .admin-header h2 {
+  color: #111;
+  font-size: 30px;
+}
+
+.kanban-products-page .admin-header p {
+  color: #4b5563;
+  font-size: 15px;
+}
+
+.kanban-products-page .admin-feedback {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.kanban-products-page .success-message {
+  color: #1a7f37;
+}
+
+.products-kanban-panel {
+  width: 100%;
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
+  padding: 14px;
+  background: #fff;
+}
+
+.products-kanban-panel > h3 {
+  margin: 0 0 12px;
+  color: #111;
+  font-size: 20px;
+}
+
+.products-kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.product-kanban-card {
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 74px;
+  grid-template-areas:
+    "info media"
+    "actions actions";
+  gap: 8px 10px;
+  border: 1px solid #e2e6ed;
+  border-radius: 6px;
+  background: #fff;
+  padding: 10px;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.product-kanban-info h4 {
+  margin: 0 0 5px;
+  color: #111;
+  font-size: 16px;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+.product-kanban-info p {
+  gap: 8px;
+  margin: 0 0 5px;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.product-kanban-info p strong {
+  color: #111;
+  font-size: 15px;
+}
+
+.product-kanban-info small {
+  margin-top: 2px;
+  color: #5f6368;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.kanban-status {
+  min-height: 20px;
+  margin-top: 6px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.kanban-status.active {
+  background: #e9f8ef;
+  color: #16813a;
+}
+
+.kanban-status.inactive {
+  background: #fff0f0;
+  color: #c03636;
+}
+
+.product-kanban-media {
+  height: 70px;
+  border: 1px solid #edf0f5;
+  border-radius: 5px;
+  background: #fafafa;
+}
+
+.product-kanban-media img {
+  max-width: 66px;
+  max-height: 64px;
+}
+
+.product-kanban-actions {
+  gap: 6px;
+  justify-content: flex-end;
+  border-top: 1px solid #edf0f5;
+  padding-top: 7px;
+}
+
+.product-kanban-actions .table-action,
+.product-kanban-actions .table-danger {
+  min-height: 26px;
+  min-width: 62px;
+  padding: 0 9px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+/* Force kanban desktop grid to three columns */
+.products-kanban-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .products-kanban-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .products-kanban-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Product toolbar actions and row selection */
+.clean-admin-topbar .admin-toolbar-button {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid #3c4658;
+  border-radius: 4px;
+  background: #2a3040;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.clean-admin-topbar .admin-toolbar-button.danger {
+  background: #3a2530;
+  border-color: #604050;
+}
+
+.clean-admin-topbar .admin-toolbar-button:not(:disabled):hover {
+  background: #3b4558;
+}
+
+.clean-admin-topbar .admin-toolbar-button.danger:not(:disabled):hover {
+  background: #c9082a;
+  border-color: #c9082a;
+}
+
+.clean-admin-topbar .admin-toolbar-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.products-table tbody tr {
+  cursor: pointer;
+}
+
+.products-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.products-table tbody tr.selected-row,
+.products-table tbody tr.selected-row:hover {
+  background: #e8f2ff;
+  box-shadow: inset 4px 0 0 #2274d8;
+}
+
+.product-kanban-card {
+  cursor: pointer;
+}
+
+.product-kanban-card.selected-card {
+  border-color: #2274d8;
+  box-shadow: 0 0 0 2px rgba(34, 116, 216, 0.16);
+}
+
+/* Compact product action bar final override */
+.clean-admin-topbar .admin-topbar-row.secondary {
+  min-height: 32px;
+  padding: 4px 10px;
+  gap: 7px;
+}
+
+.clean-admin-topbar .admin-new-button {
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.clean-admin-topbar .admin-toolbar-button {
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  background: #2f3746;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.clean-admin-topbar .admin-toolbar-button.danger:not(:disabled) {
+  border-color: #c9082a;
+  background: #c9082a;
+  color: #fff;
+}
+
+.clean-admin-topbar .admin-toolbar-button:disabled,
+.clean-admin-topbar .admin-toolbar-button.danger:disabled {
+  border-color: #3c4658;
+  background: #3a4050;
+  color: #9ca3af;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.clean-admin-topbar .admin-section-title {
+  min-width: 145px;
+  gap: 0;
+  font-size: 15px;
+}
+
+.clean-admin-topbar .admin-search-box {
+  min-height: 28px;
+  max-width: 470px;
+  font-size: 13px;
+}
+
+.clean-admin-topbar .admin-filter-chip {
+  min-height: 22px;
+  font-size: 13px;
+}
+
+.clean-admin-topbar .admin-toolbar-actions {
+  gap: 6px;
+  font-size: 13px;
+}
+
+.clean-admin-topbar .admin-toolbar-actions button {
+  min-width: 28px;
+  min-height: 26px;
+  font-size: 13px;
+}
+
+/* Visual separation between module nav and product toolbar */
+.clean-admin-topbar .admin-topbar-row.primary {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.clean-admin-topbar .admin-topbar-row.secondary {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.22);
+}
+
+/* Search clear button keeps toolbar style */
+.clean-admin-topbar .admin-filter-close {
+  border: 0;
+  background: transparent;
+  color: #9ca3af;
+  font: inherit;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.clean-admin-topbar .admin-filter-close:hover {
+  color: #fff;
+}
+
+/* Kanban grid: four columns on wide screens */
+.products-kanban-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1280px) {
+  .products-kanban-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .products-kanban-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .products-kanban-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.category-modal {
+  width: min(520px, 100%);
+}
+
+.category-form textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.clean-admin-topbar .admin-dropdown-label {
+  display: block;
+  padding: 8px 10px 4px;
+  color: #aeb7c7;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* Initial sales module and cash register opening */
+.sales-page {
+  max-width: 1440px;
+  padding: 22px 24px 28px;
+}
+
+.sales-header {
+  margin-bottom: 18px;
+}
+
+.sales-panel {
+  width: min(980px, 100%);
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
+  background: #fff;
+  color: #111827;
+}
+
+.compact-sales-panel,
+.cash-closed-panel {
+  min-height: 260px;
+  padding: 22px 24px;
+}
+
+.cash-closed-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.cash-closed-panel h3,
+.sale-start-panel h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.cash-closed-panel p,
+.sale-start-panel p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 15px;
+}
+
+.sale-workspace {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.cash-open-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cash-open-summary > div {
+  border: 1px solid #edf0f5;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #fafafa;
+}
+
+.cash-open-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cash-open-summary strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.sale-start-panel {
+  min-height: 180px;
+  border: 1px dashed #d7dde8;
+  border-radius: 6px;
+  padding: 18px;
+  background: #fcfcfd;
+}
+
+.cash-modal {
+  width: min(520px, 100%);
+}
+
+.cash-form textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+@media (max-width: 900px) {
+  .cash-open-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .cash-open-summary {
+    grid-template-columns: 1fr;
+  }
+}
+/* Empty initial state after cash register opening */
+.sales-empty-state {
+  min-height: 320px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+.sales-new-button {
+  min-height: 30px;
+  padding: 0 14px;
+  border: 1px solid #8e5ea6;
+  border-radius: 4px;
+  background: #7d4c86;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sales-new-button:hover {
+  background: #8b5795;
+}
+/* POS sale screen */
+.pos-sale-screen {
+  min-height: calc(100vh - 116px);
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  border: 1px solid #d7dbe3;
+  background: #f5f5f6;
+  color: #111827;
+}
+
+.pos-ticket-panel {
+  display: grid;
+  grid-template-rows: minmax(120px, 1fr) auto auto auto;
+  border-right: 1px solid #d7dbe3;
+  background: #fff;
+}
+
+.pos-ticket-list {
+  min-height: 130px;
+  border-bottom: 1px solid #e4e7ec;
+}
+
+.pos-ticket-empty {
+  margin: 14px;
+  color: #667085;
+  font-size: 13px;
+}
+
+.pos-ticket-row {
+  min-height: 28px;
+  display: grid;
+  grid-template-columns: 30px 1fr 92px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  background: #e9f6f7;
+  font-size: 13px;
+}
+
+.pos-ticket-row strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pos-ticket-row b {
+  text-align: right;
+  font-size: 13px;
+}
+
+.pos-ticket-total {
+  padding: 12px 8px 10px;
+  border-bottom: 1px solid #e4e7ec;
+}
+
+.pos-ticket-total div {
+  min-height: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.pos-ticket-total div:last-child {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.pos-keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid #d7dbe3;
+}
+
+.pos-keypad button {
+  min-height: 50px;
+  border: 0;
+  border-right: 1px solid #d7dbe3;
+  border-bottom: 1px solid #d7dbe3;
+  background: #f8f9fb;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pos-keypad button:nth-child(4n) {
+  border-right: 0;
+}
+
+.pos-keypad .tone-warning {
+  background: #ffe58a;
+}
+
+.pos-keypad .tone-soft {
+  background: #f7d7c9;
+}
+
+.pos-keypad .tone-danger {
+  background: #ff9da0;
+}
+
+.pos-pay-button {
+  min-height: 58px;
+  margin: 8px;
+  border: 1px solid #6f456b;
+  border-radius: 3px;
+  background: #7d4c72;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.pos-pay-button:disabled {
+  opacity: 0.6;
+}
+
+.pos-products-panel {
+  position: relative;
+  min-height: 520px;
+  padding: 32px 8px 18px;
+  background: #f7f7f8;
+}
+
+.pos-search-box {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: min(300px, calc(100% - 24px));
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e6ed;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #fff;
+}
+
+.pos-search-box span {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.pos-search-box input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #111827;
+  font: inherit;
+  font-size: 13px;
+}
+
+.pos-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 150px));
+  gap: 12px;
+  align-content: start;
+  padding-top: 18px;
+}
+
+.pos-product-card {
+  position: relative;
+  width: 150px;
+  height: 165px;
+  display: grid;
+  grid-template-rows: 1fr 28px;
+  overflow: hidden;
+  border: 1px solid #ccd3dd;
+  border-radius: 5px;
+  background: #eef0f4;
+  color: #111827;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pos-product-card:hover:not(:disabled) {
+  border-color: #7d4c86;
+  box-shadow: 0 0 0 2px rgba(125, 76, 134, 0.15);
+}
+
+.pos-product-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pos-product-card img {
+  width: 100%;
+  height: 136px;
+  object-fit: contain;
+  background: #f8f8f8;
+}
+
+.pos-product-card span {
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 34px 6px 8px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pos-product-card strong {
+  position: absolute;
+  right: 5px;
+  bottom: 6px;
+  min-width: 22px;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #050505;
+  color: #fff;
+  font-size: 12px;
+}
+
+.pos-products-message {
+  margin: 28px 8px 0;
+  color: #667085;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .pos-sale-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .pos-ticket-panel {
+    border-right: 0;
+    border-bottom: 1px solid #d7dbe3;
+  }
+
+  .pos-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  }
+
+  .pos-product-card {
+    width: 100%;
+  }
+}
+/* POS layout must use full width, not centered like admin lists */
+.admin-page.sales-page {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sales-page .sales-header,
+.sales-page .admin-feedback,
+.sales-page .compact-sales-panel,
+.sales-page .cash-closed-panel {
+  margin: 22px 24px 0;
+}
+
+.sales-page .pos-sale-screen {
+  width: 100%;
+  margin: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+.sales-page .pos-products-panel {
+  min-width: 0;
+}
+
+.sales-page .pos-products-grid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 150px));
+  justify-content: start;
+}
+/* Simplified POS topbar after cash opening */
+.pos-sale-topbar {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid #111827;
+  background: #202532;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+
+.pos-new-sale-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #8e5ea6;
+  border-radius: 5px;
+  background: #7d4c86;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pos-new-sale-button:hover {
+  background: #8b5795;
+}
+
+.pos-menu-button {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #3c4658;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.pos-menu-button span {
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: #0f172a;
+}
+
+.pos-sale-topbar + .sales-page .pos-sale-screen {
+  min-height: calc(100vh - 56px);
+}
+/* Compact POS topbar correction */
+.pos-sale-topbar {
+  min-height: 38px;
+  padding: 4px 12px 4px 0;
+}
+
+.pos-new-sale-button {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.pos-menu-button {
+  width: 34px;
+  height: 30px;
+  gap: 4px;
+}
+
+.pos-menu-button span {
+  width: 18px;
+  height: 2px;
+}
+
+.pos-sale-topbar + .sales-page .pos-sale-screen {
+  min-height: calc(100vh - 38px);
+}
+
+.pos-search-icon {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.pos-search-icon::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  width: 11px;
+  height: 11px;
+  border: 3px solid #0f172a;
+  border-radius: 50%;
+}
+
+.pos-search-icon::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 8px;
+  height: 3px;
+  border-radius: 999px;
+  background: #7d4c86;
+  transform: rotate(45deg);
+}
+
+.pos-keypad .tone-danger {
+  font-size: 13px;
+}
+/* Full viewport POS correction and purchase quantity badges */
+.pos-sale-topbar {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.admin-page.sales-page {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+/* POS bar spacing and visible selected quantity */
+.pos-sale-topbar {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.pos-new-sale-button {
+  margin-left: 0;
+}
+
+.pos-product-card strong {
+  right: 8px;
+  bottom: 8px;
+  min-width: 32px;
+  min-height: 32px;
+  border: 2px solid #fff;
+  border-radius: 7px;
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.pos-product-card span {
+  padding-right: 48px;
+}
+/* POS left ticket inner spacing */
+.pos-ticket-panel {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.pos-ticket-list,
+.pos-ticket-total,
+.pos-keypad {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.pos-ticket-list {
+  border-left: 1px solid #e4e7ec;
+  border-right: 1px solid #e4e7ec;
+}
+
+.pos-ticket-total {
+  border-left: 1px solid #e4e7ec;
+  border-right: 1px solid #e4e7ec;
+}
+
+.pos-keypad {
+  border-left: 1px solid #d7dbe3;
+  border-right: 1px solid #d7dbe3;
+}
+
+.pos-pay-button {
+  margin-left: 0;
+  margin-right: 0;
+}
+/* Selectable POS ticket rows */
+.pos-ticket-row {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pos-ticket-row:hover {
+  background: #dff2f4;
+}
+
+.pos-ticket-row.selected-ticket-row,
+.pos-ticket-row.selected-ticket-row:hover {
+  background: #dcecff;
+  box-shadow: inset 4px 0 0 #2274d8;
+}
+
+.pos-ticket-row.selected-ticket-row span {
+  font-weight: 900;
+  color: #0f4fa8;
+}
+
+.pos-error-message {
+  position: relative;
+  z-index: 2;
+  margin: 8px 12px;
+  font-size: 13px;
+}
+/* POS keypad press feedback */
+.pos-keypad button {
+  transition: background 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+}
+
+.pos-keypad button:hover {
+  background: #eef2f7;
+  box-shadow: inset 0 0 0 2px rgba(34, 116, 216, 0.18);
+}
+
+.pos-keypad button:active {
+  background: #dbeafe;
+  box-shadow: inset 0 0 0 2px #2274d8;
+  transform: translateY(1px) scale(0.99);
+}
+
+.pos-keypad button:focus-visible {
+  outline: 2px solid #2274d8;
+  outline-offset: -2px;
+}
+
+.pos-keypad .tone-warning:hover {
+  background: #ffdc5c;
+}
+
+.pos-keypad .tone-warning:active {
+  background: #f4c430;
+}
+
+.pos-keypad .tone-soft:hover {
+  background: #efc4b1;
+}
+
+.pos-keypad .tone-soft:active {
+  background: #e7ad95;
+}
+
+.pos-keypad .tone-danger:hover {
+  background: #ff8087;
+}
+
+.pos-keypad .tone-danger:active {
+  background: #f45f68;
 }
