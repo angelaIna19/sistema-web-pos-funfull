@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import {
   actualizarProducto,
   crearProducto,
   eliminarProducto,
+  obtenerCategorias,
   obtenerProductos,
 } from "../../services/api";
 
@@ -33,6 +34,7 @@ function leerImagenComoDataUrl(file) {
 export default function ProductosAdmin() {
   const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [formulario, setFormulario] = useState(productoVacio);
   const [productoEditando, setProductoEditando] = useState(null);
   const [productoSeleccionadoId, setProductoSeleccionadoId] = useState(null);
@@ -65,9 +67,13 @@ export default function ProductosAdmin() {
     setError("");
 
     try {
-      const data = await obtenerProductos();
-      setProductos(data);
-      setProductoSeleccionadoId((actual) => (data.some((producto) => producto.id === actual) ? actual : null));
+      const [productosData, categoriasData] = await Promise.all([
+        obtenerProductos(),
+        obtenerCategorias(),
+      ]);
+      setProductos(productosData);
+      setCategorias(categoriasData.filter((categoria) => categoria.estado));
+      setProductoSeleccionadoId((actual) => (productosData.some((producto) => producto.id === actual) ? actual : null));
     } catch (err) {
       setError(err.response?.data?.mensaje || "No se pudo cargar la lista de productos.");
     } finally {
@@ -172,6 +178,7 @@ export default function ProductosAdmin() {
     setError("");
 
     const payload = { ...formulario };
+    if (!productoEditando) delete payload.codigo;
 
     try {
       if (productoEditando) {
@@ -227,14 +234,14 @@ export default function ProductosAdmin() {
         <table className="admin-table products-table" onClick={(event) => event.stopPropagation()}>
           <thead>
             <tr>
-              <th>Codigo</th>
+              <th>Código</th>
               <th>Nombre</th>
-              <th>Categoria</th>
+              <th>Categoría</th>
               <th>Marca</th>
               <th>Compra</th>
               <th>Venta</th>
               <th>Stock</th>
-              <th>Minimo</th>
+              <th>Mínimo</th>
               <th>Estado</th>
             </tr>
           </thead>
@@ -278,7 +285,7 @@ export default function ProductosAdmin() {
                 <span>{producto.categoria}</span>
               </p>
               <small>{producto.codigo} - {producto.marca}</small>
-              <small>Stock: {producto.stock} - Minimo: {producto.stockMinimo}</small>
+              <small>Stock: {producto.stock} - Mínimo: {producto.stockMinimo}</small>
               <span className={producto.estado ? "kanban-status active" : "kanban-status inactive"}>
                 {producto.estado ? "Activo" : "Inactivo"}
               </span>
@@ -309,7 +316,7 @@ export default function ProductosAdmin() {
       <main className={`admin-page compact-products-page ${vistaProductos === "kanban" ? "kanban-products-page" : ""}`}>
         <header className="admin-header">
           <div>
-            <h2>Gestion de Productos</h2>
+            <h2>Gestión de Productos</h2>
             <p>Administrador: {usuario}</p>
           </div>
         </header>
@@ -339,19 +346,28 @@ export default function ProductosAdmin() {
             </header>
 
             <form className="producto-form compact-product-form" onSubmit={guardarProducto}>
-              <label>
-                Codigo
-                <input name="codigo" value={formulario.codigo} onChange={handleChange} required autoFocus />
-              </label>
+              {productoEditando ? (
+                <label>
+                  Codigo
+                  <input name="codigo" value={formulario.codigo} readOnly />
+                </label>
+              ) : (
+                <p className="product-code-help full-field">El código se generará automáticamente según la categoría.</p>
+              )}
 
               <label>
                 Nombre
-                <input name="nombre" value={formulario.nombre} onChange={handleChange} required />
+                <input name="nombre" value={formulario.nombre} onChange={handleChange} required autoFocus={!productoEditando} />
               </label>
 
               <label>
                 Categoria
-                <input name="categoria" value={formulario.categoria} onChange={handleChange} required />
+                <select name="categoria" value={formulario.categoria} onChange={handleChange} required>
+                  <option value="">Seleccione una categoría</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria.id} value={categoria.nombre}>{categoria.nombre}</option>
+                  ))}
+                </select>
               </label>
 
               <label>
@@ -393,7 +409,7 @@ export default function ProductosAdmin() {
 
               <label className="checkbox-row full-field">
                 <input name="estado" type="checkbox" checked={formulario.estado} onChange={handleChange} />
-                Producto activo para visualizacion publica
+                Producto activo para visualización pública
               </label>
 
               {error && <p className="error-message full-field">{error}</p>}

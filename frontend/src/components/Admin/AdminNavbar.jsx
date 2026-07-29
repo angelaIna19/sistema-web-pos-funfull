@@ -55,20 +55,31 @@ export default function AdminNavbar({
           <span>Punto de venta</span>
         </div>
 
-        <nav className="admin-module-tabs" aria-label="Modulos administrativos">
+        <nav className="admin-module-tabs" aria-label="Módulos administrativos">
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("ventas")}>
             <button className="admin-menu-trigger" type="button">Ventas</button>
             {menuAbierto === "ventas" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <Link to="/admin/ventas/nueva" role="menuitem" onClick={cerrarMenu}>Nueva venta</Link>
-                <button type="button" role="menuitem">Historial de ventas</button>
-                <span className="admin-dropdown-label">Caja</span>
-                <button type="button" role="menuitem">Abrir caja</button>
-                <button type="button" role="menuitem">Cerrar caja</button>
+                <Link to="/admin/ventas/historial" role="menuitem" onClick={cerrarMenu}>Historial de ventas</Link>
+                <Link to="/admin/ventas/historial" role="menuitem" onClick={cerrarMenu}>Detalle de ventas</Link>
+                <button type="button" role="menuitem">Anular venta</button>
               </div>
             )}
           </div>
 
+
+          <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("caja")}>
+            <button className="admin-menu-trigger" type="button">Caja</button>
+            {menuAbierto === "caja" && (
+              <div className="admin-dropdown-menu is-open" role="menu">
+                <Link to="/admin/caja" role="menuitem" onClick={cerrarMenu}>Caja actual</Link>
+                <Link to="/admin/caja?accion=abrir" role="menuitem" onClick={cerrarMenu}>Abrir caja</Link>
+                <Link to="/admin/caja?accion=cerrar" role="menuitem" onClick={cerrarMenu}>Cerrar caja</Link>
+                <Link to="/admin/caja/historial" role="menuitem" onClick={cerrarMenu}>Historial de cajas</Link>
+              </div>
+            )}
+          </div>
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("producto")}>
             <button className="admin-menu-trigger" type="button">Producto</button>
             {menuAbierto === "producto" && (
@@ -76,7 +87,7 @@ export default function AdminNavbar({
                 <Link to="/admin/productos" role="menuitem" onClick={abrirSeccionProductos}>
                   Productos
                 </Link>
-                <Link to="/admin/categorias" role="menuitem" onClick={abrirSeccionProductos}>Categorias</Link>
+                <Link to="/admin/categorias" role="menuitem" onClick={abrirSeccionProductos}>Categorías</Link>
               </div>
             )}
           </div>
@@ -98,7 +109,7 @@ export default function AdminNavbar({
             {menuAbierto === "reportes" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <button type="button" role="menuitem">Reporte de ventas</button>
-                <button type="button" role="menuitem">Productos mas vendidos</button>
+                <button type="button" role="menuitem">Productos más vendidos</button>
                 <button type="button" role="menuitem">Productos con stock bajo</button>
               </div>
             )}

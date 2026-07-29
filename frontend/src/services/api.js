@@ -1,4 +1,4 @@
-import axios from "axios";
+﻿import axios from "axios";
 
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api";
 
@@ -68,6 +68,14 @@ export async function eliminarCategoria(id) {
   });
   return respuesta.data;
 }
+
+export async function obtenerCajas() {
+  const respuesta = await axios.get(`${API_URL}/admin/cajas`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
 export async function obtenerCajaActual() {
   const respuesta = await axios.get(`${API_URL}/admin/caja/actual`, {
     headers: getAuthHeaders(),
@@ -77,6 +85,33 @@ export async function obtenerCajaActual() {
 
 export async function abrirCaja(datos) {
   const respuesta = await axios.post(`${API_URL}/admin/caja/abrir`, datos, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function cerrarCaja() {
+  const respuesta = await axios.post(`${API_URL}/admin/caja/cerrar`, {}, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function registrarVenta(venta) {
+  const respuesta = await axios.post(`${API_URL}/admin/ventas`, venta, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+export async function obtenerVentas() {
+  const respuesta = await axios.get(`${API_URL}/admin/ventas`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function obtenerDetalleVenta(id) {
+  const respuesta = await axios.get(`${API_URL}/admin/ventas/${id}`, {
     headers: getAuthHeaders(),
   });
   return respuesta.data;

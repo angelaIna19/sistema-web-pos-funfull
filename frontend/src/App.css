@@ -3254,3 +3254,993 @@ footer {
 .pos-keypad .tone-danger:active {
   background: #f45f68;
 }
+/* Product automatic code helper */
+.product-code-help {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #dbe4f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #475467;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.producto-form select {
+  min-height: 38px;
+  border: 1px solid #d7d7d7;
+  border-radius: 6px;
+  padding: 7px 10px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  font-size: 15px;
+}
+
+.producto-form input[readonly] {
+  background: #f8fafc;
+  color: #667085;
+}
+/* POS quick menu and cash dashboard */
+.pos-menu-wrap {
+  position: relative;
+  margin-left: auto;
+}
+
+.pos-quick-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  min-width: 170px;
+  padding: 6px;
+  border: 1px solid #3b4354;
+  border-radius: 6px;
+  background: #202532;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+}
+
+.pos-quick-menu button {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #f8fafc;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pos-quick-menu button:hover,
+.pos-quick-menu button:focus-visible {
+  background: #343a49;
+  outline: none;
+}
+
+.pos-quick-menu button.danger {
+  color: #fecdd3;
+}
+
+.pos-quick-menu button.danger:hover,
+.pos-quick-menu button.danger:focus-visible {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+.cash-dashboard-page {
+  min-height: calc(100vh - 42px);
+  background: #171a23;
+  color: #f8fafc;
+}
+
+.cash-dashboard-page .sales-header {
+  margin: 18px 24px 0;
+  color: #f8fafc;
+}
+
+.cash-dashboard-page .sales-header p {
+  color: #cbd5e1;
+}
+
+.sales-page .cash-dashboard-panel {
+  width: min(960px, calc(100vw - 48px));
+  min-height: 360px;
+  margin: 18px 24px 0;
+  padding: 24px;
+  border-color: #3b4354;
+  background: #262b37;
+  color: #f8fafc;
+}
+
+.cash-dashboard-card {
+  min-height: 300px;
+  display: grid;
+  grid-template-columns: 220px minmax(260px, 1fr);
+  grid-template-rows: auto auto 1fr;
+  gap: 28px 70px;
+  align-items: start;
+}
+
+.cash-dashboard-title {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 220px;
+}
+
+.cash-dashboard-title h3 {
+  margin: 0;
+  min-width: 160px;
+  font-size: 18px;
+  color: #f8fafc;
+}
+
+.cash-dashboard-title span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid #f87171;
+  border-radius: 5px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.cash-dashboard-card .admin-primary {
+  width: fit-content;
+  min-height: 38px;
+  padding: 0 16px;
+}
+
+.cash-worker-badge {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 800;
+}
+
+.cash-dashboard-summary {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  font-size: 16px;
+}
+
+.cash-dashboard-summary div {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+}
+
+.cash-dashboard-summary dt,
+.cash-dashboard-summary dd {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .cash-dashboard-card {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .cash-dashboard-title {
+    gap: 16px;
+    justify-content: space-between;
+  }
+
+  .cash-dashboard-summary {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+/* Caja module */
+.caja-page {
+  min-height: calc(100vh - 42px);
+  background: #ffffff;
+}
+
+.caja-layout {
+  width: min(1660px, calc(100vw - 48px));
+  margin: 18px auto 0;
+  display: grid;
+  gap: 18px;
+}
+
+.caja-page .caja-current-panel,
+.caja-page .caja-history-panel {
+  width: 100%;
+  margin: 0;
+}
+
+.caja-page .caja-current-panel {
+  min-height: 260px;
+  padding: 22px 24px;
+  background: #262b37;
+  border-color: #3b4354;
+  color: #f8fafc;
+}
+
+.caja-card-light {
+  min-height: 210px;
+}
+
+.caja-card-light .danger-action {
+  width: fit-content;
+  min-height: 38px;
+  padding: 0 16px;
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #fff;
+}
+
+.cash-empty-state {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.cash-empty-state h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 20px;
+}
+
+.cash-empty-state p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.caja-history-panel {
+  padding: 22px 24px;
+}
+
+.caja-table th,
+.caja-table td {
+  white-space: nowrap;
+}
+
+@media (min-width: 1100px) {
+  .caja-layout {
+    grid-template-columns: minmax(520px, 0.9fr) minmax(620px, 1.1fr);
+    align-items: start;
+  }
+}
+/* Caja separated views */
+.caja-layout-single {
+  max-width: 980px;
+  margin-left: 24px;
+  margin-right: auto;
+}
+
+.caja-layout-history {
+  width: min(1500px, calc(100vw - 48px));
+  display: block;
+}
+
+.caja-layout-history .caja-history-panel {
+  width: 100%;
+}
+
+@media (min-width: 1100px) {
+  .caja-layout-single {
+    grid-template-columns: 1fr;
+  }
+
+  .caja-layout-history {
+    grid-template-columns: 1fr;
+  }
+}
+/* Caja visual alignment with admin CRUD screens */
+.caja-page .admin-header {
+  width: min(1500px, calc(100vw - 48px));
+  margin: 28px auto 18px;
+}
+
+.caja-layout-single {
+  width: min(1100px, calc(100vw - 48px));
+  margin: 0 auto;
+}
+
+.caja-page .caja-current-panel {
+  min-height: 0;
+  padding: 22px 24px;
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
+  background: #fff;
+  color: #111;
+}
+
+.caja-page .cash-dashboard-card {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 180px minmax(260px, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 16px 34px;
+  align-items: start;
+}
+
+.caja-page .cash-dashboard-title {
+  grid-column: 1 / -1;
+  gap: 14px;
+  justify-content: flex-start;
+  border-bottom: 1px solid #eef0f3;
+  padding-bottom: 14px;
+}
+
+.caja-page .cash-dashboard-title h3 {
+  min-width: 0;
+  margin: 0;
+  color: #111;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.caja-page .cash-dashboard-title span {
+  min-height: 24px;
+  padding: 0 10px;
+  border-color: #f4b4b4;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+.caja-page .cash-dashboard-card .admin-primary,
+.caja-page .cash-dashboard-card .danger-action {
+  width: 160px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.caja-page .cash-dashboard-card .danger-action {
+  grid-column: 1;
+  border-color: #c9082a;
+  background: #c9082a;
+  color: #fff;
+}
+
+.caja-page .cash-worker-badge {
+  grid-column: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 15px;
+}
+
+.caja-page .cash-dashboard-summary {
+  grid-column: 2;
+  grid-row: 2 / span 3;
+  gap: 9px;
+  color: #111827;
+  font-size: 15px;
+}
+
+.caja-page .cash-dashboard-summary div {
+  grid-template-columns: 130px 1fr;
+  gap: 22px;
+}
+
+.caja-page .cash-dashboard-summary dt {
+  color: #4b5563;
+  font-weight: 800;
+}
+
+.caja-page .cash-dashboard-summary dd {
+  font-weight: 500;
+}
+
+.caja-page .cash-empty-state {
+  min-height: 160px;
+  align-content: start;
+  gap: 14px;
+}
+
+.caja-page .cash-empty-state h3 {
+  color: #111;
+  font-size: 22px;
+}
+
+.caja-page .cash-empty-state p {
+  color: #4b5563;
+  font-size: 16px;
+}
+
+.caja-page .cash-empty-state .admin-primary {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .caja-page .cash-dashboard-card {
+    grid-template-columns: 1fr;
+  }
+
+  .caja-page .cash-dashboard-summary {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+/* Caja admin compact visual refinement */
+.caja-page .admin-header {
+  width: min(1500px, calc(100vw - 48px));
+  margin: 28px auto 16px;
+}
+
+.caja-page .admin-header h2 {
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+.caja-page .admin-header p {
+  font-size: 15px;
+}
+
+.caja-page .admin-feedback {
+  width: min(1500px, calc(100vw - 48px));
+  margin: 0 auto 10px;
+}
+
+.caja-page .caja-layout-single {
+  width: min(1500px, calc(100vw - 48px));
+  margin: 0 auto;
+}
+
+.caja-page .caja-current-panel {
+  width: 100%;
+  min-height: 0;
+  padding: 20px 22px;
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
+  background: #fff;
+  color: #111827;
+  box-shadow: none;
+}
+
+.caja-page .cash-dashboard-card {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 190px minmax(320px, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 14px 36px;
+  align-items: start;
+}
+
+.caja-page .cash-dashboard-title {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.caja-page .cash-dashboard-title h3 {
+  min-width: 0;
+  margin: 0;
+  color: #111;
+  font-size: 22px;
+  line-height: 1.1;
+  text-shadow: none;
+}
+
+.caja-page .cash-dashboard-title span {
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid #f4b4b4;
+  border-radius: 5px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+.caja-page .cash-dashboard-card .admin-primary,
+.caja-page .cash-dashboard-card .danger-action {
+  width: 160px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  text-shadow: none;
+}
+
+.caja-page .cash-dashboard-card .danger-action {
+  grid-column: 1;
+  border-color: #c9082a;
+  background: #c9082a;
+  color: #fff;
+}
+
+.caja-page .cash-worker-badge {
+  display: none;
+}
+
+.caja-page .cash-dashboard-summary {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  color: #111827;
+  font-size: 15px;
+  text-shadow: none;
+}
+
+.caja-page .cash-dashboard-summary div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 20px;
+}
+
+.caja-page .cash-dashboard-summary dt,
+.caja-page .cash-dashboard-summary dd {
+  margin: 0;
+  text-shadow: none;
+}
+
+.caja-page .cash-dashboard-summary dt {
+  color: #4b5563;
+  font-weight: 800;
+}
+
+.caja-page .cash-dashboard-summary dd {
+  font-weight: 500;
+}
+
+.caja-page .cash-empty-state {
+  min-height: 150px;
+  align-content: start;
+  gap: 14px;
+}
+
+.caja-page .cash-empty-state h3 {
+  color: #111;
+  font-size: 22px;
+  text-shadow: none;
+}
+
+.caja-page .cash-empty-state p {
+  color: #4b5563;
+  font-size: 16px;
+  text-shadow: none;
+}
+
+.caja-page .cash-empty-state .admin-primary {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.caja-page .caja-layout-history {
+  width: min(1500px, calc(100vw - 48px));
+  margin: 0 auto;
+}
+
+.caja-page .caja-history-panel {
+  padding: 20px 22px;
+  border-radius: 7px;
+}
+
+@media (max-width: 760px) {
+  .caja-page .cash-dashboard-card {
+    grid-template-columns: 1fr;
+  }
+
+  .caja-page .cash-dashboard-summary {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* Sales history */
+.ventas-history-page .admin-header,
+.ventas-history-page .ventas-history-panel {
+  width: min(1500px, calc(100vw - 48px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.history-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.history-panel-header h3 {
+  margin: 0;
+}
+
+.history-search {
+  width: min(420px, 100%);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d6dde8;
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #4b5563;
+  font-weight: 800;
+}
+
+.history-search input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  font: inherit;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background: #f4f7fb;
+}
+
+.sale-detail-modal {
+  width: min(900px, calc(100vw - 48px));
+}
+
+.sale-detail-content {
+  display: grid;
+  gap: 18px;
+}
+
+.sale-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.sale-detail-summary div {
+  border: 1px solid #e4e7ec;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #f8fafc;
+}
+
+.sale-detail-summary span {
+  display: block;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sale-detail-summary strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.sale-detail-totals {
+  width: min(360px, 100%);
+  margin: 0 0 0 auto;
+  display: grid;
+  gap: 6px;
+}
+
+.sale-detail-totals div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+}
+
+.sale-detail-totals dt,
+.sale-detail-totals dd {
+  margin: 0;
+}
+
+.sale-detail-totals div:nth-child(3) {
+  padding-top: 8px;
+  border-top: 1px solid #e4e7ec;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.sale-detail-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #344054;
+}
+
+@media (max-width: 760px) {
+  .history-panel-header,
+  .sale-detail-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .history-panel-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* Compact sale detail modal */
+.sale-detail-modal {
+  width: min(760px, calc(100vw - 48px));
+  max-height: min(82vh, 720px);
+}
+
+.sale-detail-modal .product-modal-header {
+  padding: 12px 16px;
+}
+
+.sale-detail-modal .product-modal-header h3 {
+  font-size: 22px;
+}
+
+.sale-detail-content {
+  gap: 12px;
+}
+
+.sale-detail-summary {
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.sale-detail-summary div {
+  padding: 8px 10px;
+}
+
+.sale-detail-summary span {
+  font-size: 11px;
+}
+
+.sale-detail-summary strong {
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.sale-detail-table th,
+.sale-detail-table td {
+  padding: 8px 10px;
+}
+
+.sale-detail-table td strong {
+  font-size: 16px;
+}
+
+.sale-detail-totals {
+  width: min(310px, 100%);
+  gap: 4px;
+  font-size: 15px;
+}
+
+.sale-detail-totals div {
+  gap: 14px;
+}
+
+.sale-detail-totals div:nth-child(3) {
+  padding-top: 6px;
+  font-size: 18px;
+}
+
+.sale-detail-note {
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+/* Match main admin navbar thickness with POS sale topbar */
+.clean-admin-topbar .admin-topbar-row.primary {
+  min-height: 38px;
+  padding: 4px 12px;
+  gap: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.clean-admin-topbar .admin-app-title {
+  min-width: 250px;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.clean-admin-topbar .admin-module-tabs {
+  min-height: 30px;
+  align-items: center;
+  gap: 18px;
+}
+
+.clean-admin-topbar .admin-menu-item {
+  min-height: 30px;
+}
+
+.clean-admin-topbar .admin-menu-trigger {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.clean-admin-topbar .admin-user-name {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.clean-admin-topbar .admin-user-badge {
+  width: 30px;
+  height: 32px;
+  font-size: 16px;
+}
+
+/* Caja left alignment and tighter admin navbar spacing */
+.clean-admin-topbar .admin-app-title {
+  min-width: 220px;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.clean-admin-topbar .admin-module-tabs {
+  margin-left: 0;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+}
+
+.caja-page .admin-header {
+  width: min(1500px, calc(100vw - 48px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.caja-page .caja-layout-single {
+  width: min(760px, calc(100vw - 48px));
+  margin-left: calc((100vw - min(1500px, calc(100vw - 48px))) / 2);
+  margin-right: auto;
+}
+
+.caja-page .caja-current-panel {
+  width: 100%;
+}
+
+/* Compact list screens: caja history, sales history, products and categories */
+.compact-products-page,
+.caja-page {
+  padding-top: 14px;
+  padding-bottom: 18px;
+}
+
+.compact-products-page .admin-header,
+.caja-page .admin-header,
+.ventas-history-page .admin-header {
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+
+.compact-products-page .admin-header h2,
+.caja-page .admin-header h2,
+.ventas-history-page .admin-header h2 {
+  font-size: 26px;
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+
+.compact-products-page .admin-header p,
+.caja-page .admin-header p,
+.ventas-history-page .admin-header p {
+  font-size: 14px;
+}
+
+.products-only-list,
+.caja-page .caja-history-panel,
+.ventas-history-page .ventas-history-panel {
+  min-height: 0;
+  padding: 14px 18px;
+  border-radius: 6px;
+}
+
+.productos-admin-list h3,
+.caja-page .caja-history-panel h3,
+.ventas-history-page .ventas-history-panel h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.caja-page .caja-layout-history,
+.ventas-history-page .ventas-history-panel,
+.ventas-history-page .admin-header,
+.caja-page .admin-header {
+  width: min(1500px, calc(100vw - 32px));
+}
+
+.caja-page .caja-layout-history {
+  margin-top: 0;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 7px 8px;
+}
+
+.admin-table th {
+  font-size: 11px;
+}
+
+.admin-table td {
+  font-size: 14px;
+}
+
+.admin-table td strong {
+  font-size: 15px;
+}
+
+.admin-table td span {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.history-panel-header {
+  margin-bottom: 12px;
+}
+
+/* Compact administrative buttons */
+.admin-primary,
+.admin-secondary,
+.table-action,
+.table-danger {
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form-actions {
+  gap: 8px;
+}
+
+.compact-product-form .admin-primary,
+.compact-product-form .admin-secondary,
+.cash-form .admin-primary,
+.cash-form .admin-secondary,
+.category-form .admin-primary,
+.category-form .admin-secondary {
+  min-height: 30px;
+  padding: 0 11px;
+  font-size: 13px;
+}
+
+.caja-page .cash-dashboard-card .admin-primary,
+.caja-page .cash-dashboard-card .danger-action,
+.caja-page .cash-empty-state .admin-primary {
+  width: auto;
+  min-width: 118px;
+  max-width: 145px;
+  min-height: 30px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: 5px;
+}
+
+.caja-page .cash-dashboard-card .danger-action {
+  min-width: 112px;
+}

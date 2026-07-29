@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import RutaProtegida from "./components/Admin/RutaProtegida";
@@ -9,6 +9,8 @@ import Login from "./pages/Admin/Login";
 import ProductosAdmin from "./pages/Admin/ProductosAdmin";
 import CategoriasAdmin from "./pages/Admin/CategoriasAdmin";
 import NuevaVentaAdmin from "./pages/Admin/NuevaVentaAdmin";
+import VentasHistorialAdmin from "./pages/Admin/VentasHistorialAdmin";
+import CajaAdmin from "./pages/Admin/CajaAdmin";
 import "./App.css";
 
 function AppLayout() {
@@ -40,6 +42,30 @@ function AppLayout() {
           }
         />
         <Route
+          path="/admin/caja/historial"
+          element={
+            <RutaProtegida>
+              <CajaAdmin modo="historial" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/caja"
+          element={
+            <RutaProtegida>
+              <CajaAdmin />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/ventas/historial"
+          element={
+            <RutaProtegida>
+              <VentasHistorialAdmin />
+            </RutaProtegida>
+          }
+        />
+        <Route
           path="/admin/ventas/nueva"
           element={
             <RutaProtegida>
@@ -60,4 +86,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
