@@ -1,4 +1,4 @@
-const { query } = require("../config/db");
+﻿const { query } = require("../config/db");
 const env = require("../config/env");
 const { hashPassword } = require("../utils/password");
 
@@ -16,6 +16,7 @@ async function initDb() {
   await initProductsTable();
   await initCategoriesTable();
   await initCashRegisterTable();
+  await initSalesTables();
   await seedAdmin();
 }
 
@@ -103,6 +104,59 @@ async function initCashRegisterTable() {
     CREATE UNIQUE INDEX IF NOT EXISTS cajas_abierta_unica
     ON cajas (estado)
     WHERE estado = 'ABIERTA';
+  `);
+}
+
+async function initSalesTables() {
+  await query(`
+    CREATE TABLE IF NOT EXISTS ventas (
+      id SERIAL PRIMARY KEY,
+      caja_id INTEGER NOT NULL REFERENCES cajas(id),
+      usuario_id INTEGER NOT NULL REFERENCES usuarios_admin(id),
+      metodo_pago VARCHAR(20) NOT NULL DEFAULT 'EFECTIVO',
+      subtotal NUMERIC(10, 2) NOT NULL CHECK (subtotal >= 0),
+      impuesto NUMERIC(10, 2) NOT NULL CHECK (impuesto >= 0),
+      total NUMERIC(10, 2) NOT NULL CHECK (total >= 0),
+      monto_recibido NUMERIC(10, 2) NOT NULL CHECK (monto_recibido >= 0),
+      cambio NUMERIC(10, 2) NOT NULL CHECK (cambio >= 0),
+      observacion TEXT,
+      creada_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT ventas_metodo_pago_check CHECK (metodo_pago IN ('EFECTIVO', 'TRANSFERENCIA'))
+    );
+  `);
+
+  await query(`
+    ALTER TABLE ventas
+    DROP CONSTRAINT IF EXISTS ventas_metodo_pago_check;
+  `);
+
+  await query(`
+    ALTER TABLE ventas
+    ADD CONSTRAINT ventas_metodo_pago_check CHECK (metodo_pago IN ('EFECTIVO', 'TRANSFERENCIA'));
+  `);
+
+  await query(`
+    CREATE TABLE IF NOT EXISTS venta_detalles (
+      id SERIAL PRIMARY KEY,
+      venta_id INTEGER NOT NULL REFERENCES ventas(id) ON DELETE CASCADE,
+      producto_id INTEGER NOT NULL REFERENCES productos(id),
+      cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+      precio_unitario NUMERIC(10, 2) NOT NULL CHECK (precio_unitario >= 0),
+      subtotal NUMERIC(10, 2) NOT NULL CHECK (subtotal >= 0)
+    );
+  `);
+
+  await query(`
+    CREATE TABLE IF NOT EXISTS caja_movimientos (
+      id SERIAL PRIMARY KEY,
+      caja_id INTEGER NOT NULL REFERENCES cajas(id),
+      venta_id INTEGER REFERENCES ventas(id),
+      tipo VARCHAR(20) NOT NULL,
+      monto NUMERIC(10, 2) NOT NULL CHECK (monto >= 0),
+      descripcion TEXT,
+      creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT caja_movimientos_tipo_check CHECK (tipo IN ('INGRESO', 'EGRESO'))
+    );
   `);
 }
 

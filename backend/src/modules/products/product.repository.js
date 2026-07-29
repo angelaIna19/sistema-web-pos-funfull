@@ -1,4 +1,4 @@
-﻿const { query } = require("../../config/db");
+const { query } = require("../../config/db");
 
 function mapProducto(row) {
   return {
@@ -24,6 +24,31 @@ async function findAll() {
 async function findById(id) {
   const result = await query("SELECT * FROM productos WHERE id = $1", [id]);
   return result.rows[0] ? mapProducto(result.rows[0]) : null;
+}
+
+async function findCategoryByName(nombre) {
+  const result = await query(
+    `SELECT id, nombre, estado
+     FROM categorias
+     WHERE LOWER(TRIM(nombre)) = LOWER(TRIM($1))
+     LIMIT 1`,
+    [nombre]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function findLastCodeByPrefix(prefix) {
+  const result = await query(
+    `SELECT codigo
+     FROM productos
+     WHERE codigo LIKE $1
+     ORDER BY codigo DESC
+     LIMIT 1`,
+    [`${prefix}%`]
+  );
+
+  return result.rows[0]?.codigo || null;
 }
 
 async function create(producto) {
@@ -87,4 +112,4 @@ async function remove(id) {
   return result.rowCount > 0;
 }
 
-module.exports = { findAll, findById, create, update, remove };
+module.exports = { findAll, findById, findCategoryByName, findLastCodeByPrefix, create, update, remove };

@@ -1,7 +1,11 @@
-const cashRegisterRepository = require("./cashRegister.repository");
+﻿const cashRegisterRepository = require("./cashRegister.repository");
 
 async function getOpenCashRegister() {
   return cashRegisterRepository.findOpen();
+}
+
+async function listCashRegisters() {
+  return cashRegisterRepository.findAll();
 }
 
 async function openCashRegister(admin, body) {
@@ -40,4 +44,17 @@ async function openCashRegister(admin, body) {
   });
 }
 
-module.exports = { getOpenCashRegister, openCashRegister };
+async function closeCashRegister() {
+  const existing = await cashRegisterRepository.findOpen();
+
+  if (!existing) {
+    const error = new Error("No existe una caja registradora abierta.");
+    error.status = 400;
+    throw error;
+  }
+
+  const caja = await cashRegisterRepository.closeOpen();
+  return { caja, mensaje: "Caja cerrada correctamente." };
+}
+
+module.exports = { getOpenCashRegister, listCashRegisters, openCashRegister, closeCashRegister };

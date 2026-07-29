@@ -5,6 +5,7 @@ const authRoutes = require("./modules/auth/auth.routes");
 const productRoutes = require("./modules/products/product.routes");
 const categoryRoutes = require("./modules/categories/category.routes");
 const cashRegisterRoutes = require("./modules/cashRegister/cashRegister.routes");
+const saleRoutes = require("./modules/sales/sale.routes");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", productRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", cashRegisterRoutes);
+app.use("/api", saleRoutes);
 
 module.exports = app;
 

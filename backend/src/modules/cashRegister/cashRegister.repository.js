@@ -1,4 +1,4 @@
-const { query } = require("../../config/db");
+﻿const { query } = require("../../config/db");
 
 function mapCaja(row) {
   return {
@@ -11,20 +11,41 @@ function mapCaja(row) {
     estado: row.estado,
     abiertaEn: row.abierta_en,
     cerradaEn: row.cerrada_en,
+    vendido: Number(row.vendido || 0),
+    ventas: Number(row.ventas || 0),
   };
 }
 
+const cajaResumenSelect = `
+  SELECT c.*,
+         u.usuario,
+         COALESCE(SUM(v.total), 0) AS vendido,
+         COUNT(v.id)::int AS ventas
+  FROM cajas c
+  JOIN usuarios_admin u ON u.id = c.usuario_id
+  LEFT JOIN ventas v ON v.caja_id = c.id
+`;
+
 async function findOpen() {
   const result = await query(
-    `SELECT c.*, u.usuario
-     FROM cajas c
-     JOIN usuarios_admin u ON u.id = c.usuario_id
+    `${cajaResumenSelect}
      WHERE c.estado = 'ABIERTA'
+     GROUP BY c.id, u.usuario
      ORDER BY c.abierta_en DESC
      LIMIT 1`
   );
 
   return result.rows[0] ? mapCaja(result.rows[0]) : null;
+}
+
+async function findAll() {
+  const result = await query(
+    `${cajaResumenSelect}
+     GROUP BY c.id, u.usuario
+     ORDER BY c.abierta_en DESC`
+  );
+
+  return result.rows.map(mapCaja);
 }
 
 async function createOpening(data) {
@@ -37,7 +58,27 @@ async function createOpening(data) {
 
   const caja = result.rows[0];
   caja.usuario = data.usuario;
+  caja.vendido = 0;
+  caja.ventas = 0;
   return mapCaja(caja);
 }
 
-module.exports = { findOpen, createOpening };
+async function closeOpen() {
+  const result = await query(
+    `UPDATE cajas
+     SET estado = 'CERRADA',
+         cerrada_en = CURRENT_TIMESTAMP
+     WHERE id = (
+       SELECT id
+       FROM cajas
+       WHERE estado = 'ABIERTA'
+       ORDER BY abierta_en DESC
+       LIMIT 1
+     )
+     RETURNING *`
+  );
+
+  return result.rows[0] ? mapCaja({ ...result.rows[0], usuario: null, vendido: 0, ventas: 0 }) : null;
+}
+
+module.exports = { findOpen, findAll, createOpening, closeOpen };

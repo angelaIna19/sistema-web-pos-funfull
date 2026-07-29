@@ -1,7 +1,6 @@
 ﻿const productRepository = require("./product.repository");
 
-function validateProductPayload(body) {
-  const codigo = String(body.codigo || "").trim();
+function validateProductPayload(body, options = {}) {
   const nombre = String(body.nombre || "").trim();
   const categoria = String(body.categoria || "").trim();
   const marca = String(body.marca || "").trim();
@@ -12,7 +11,6 @@ function validateProductPayload(body) {
   const imagen = String(body.imagen || "").trim();
   const estado = normalizeBoolean(body.estado);
 
-  if (!codigo) return validationError("El código del producto es obligatorio.");
   if (!nombre) return validationError("El nombre del producto es obligatorio.");
   if (!categoria) return validationError("La categoría del producto es obligatoria.");
   if (!marca) return validationError("La marca del producto es obligatoria.");
@@ -24,7 +22,7 @@ function validateProductPayload(body) {
   if (estado === null) return validationError("El estado del producto debe ser activo o inactivo.");
 
   return {
-    codigo,
+    codigo: options.codigo || "",
     nombre,
     categoria,
     marca,
@@ -66,6 +64,49 @@ function normalizeDatabaseError(error) {
   return error;
 }
 
+async function validateCategoryExists(categoria) {
+  const category = await productRepository.findCategoryByName(categoria);
+
+  if (!category) {
+    const error = new Error("La categoría seleccionada no existe. Regístrela primero.");
+    error.status = 400;
+    throw error;
+  }
+
+  if (!category.estado) {
+    const error = new Error("La categoría seleccionada está inactiva.");
+    error.status = 400;
+    throw error;
+  }
+
+  return category.nombre;
+}
+
+async function generateProductCode(categoria) {
+  const prefix = buildCategoryPrefix(categoria);
+  const lastCode = await productRepository.findLastCodeByPrefix(prefix);
+  const lastNumber = lastCode ? Number(lastCode.slice(prefix.length)) : 0;
+  const nextNumber = Number.isFinite(lastNumber) ? lastNumber + 1 : 1;
+  return `${prefix}${String(nextNumber).padStart(3, "0")}`;
+}
+
+function buildCategoryPrefix(categoria) {
+  const normalized = removeAccents(categoria)
+    .toUpperCase()
+    .replace(/[^A-Z\s]/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+  const words = normalized.split(" ").filter(Boolean);
+
+  if (words.length >= 2) return `${words[0][0]}${words[1][0]}`;
+  if (words.length === 1) return words[0].slice(0, 2).padEnd(2, "X");
+  return "PR";
+}
+
+function removeAccents(value) {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 async function listProducts() {
   return productRepository.findAll();
 }
@@ -83,7 +124,9 @@ async function getProductById(id) {
 }
 
 async function createProduct(body) {
-  const producto = validateProductPayload(body);
+  const categoria = await validateCategoryExists(String(body.categoria || "").trim());
+  const codigo = await generateProductCode(categoria);
+  const producto = validateProductPayload({ ...body, categoria }, { codigo });
 
   try {
     return await productRepository.create(producto);
@@ -93,7 +136,11 @@ async function createProduct(body) {
 }
 
 async function updateProduct(id, body) {
-  const producto = validateProductPayload(body);
+  const actual = await getProductById(id);
+  const categoria = await validateCategoryExists(String(body.categoria || "").trim());
+  const sameCategory = actual.categoria.trim().toLowerCase() === categoria.trim().toLowerCase();
+  const codigo = sameCategory ? actual.codigo : await generateProductCode(categoria);
+  const producto = validateProductPayload({ ...body, categoria }, { codigo });
 
   try {
     const updated = await productRepository.update(id, producto);
