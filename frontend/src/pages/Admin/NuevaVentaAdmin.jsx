@@ -1,7 +1,13 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
-import { abrirCaja, cerrarCaja, obtenerCajaActual, obtenerProductos, registrarVenta } from "../../services/api";
+import {
+  abrirCaja,
+  obtenerCajaActual,
+  obtenerProductos,
+  registrarMovimientoCaja,
+  registrarVenta,
+} from "../../services/api";
 
 const formularioInicial = {
   nombreTrabajador: "",
@@ -15,6 +21,12 @@ const pagoInicial = {
   observacion: "",
 };
 
+const movimientoInicial = {
+  tipo: "INGRESO",
+  monto: "",
+  descripcion: "",
+};
+
 export default function NuevaVentaAdmin() {
   const navigate = useNavigate();
   const usuario = useMemo(() => localStorage.getItem("adminUsuario") || "admin", []);
@@ -26,8 +38,10 @@ export default function NuevaVentaAdmin() {
   const [cantidadPendiente, setCantidadPendiente] = useState("");
   const [formulario, setFormulario] = useState(formularioInicial);
   const [pago, setPago] = useState(pagoInicial);
+  const [movimientoCaja, setMovimientoCaja] = useState(movimientoInicial);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mostrarPago, setMostrarPago] = useState(false);
+  const [mostrarMovimientoCaja, setMostrarMovimientoCaja] = useState(false);
   const [vistaCaja, setVistaCaja] = useState(false);
   const [menuVentaAbierto, setMenuVentaAbierto] = useState(false);
   const [cargando, setCargando] = useState(true);
@@ -84,6 +98,11 @@ export default function NuevaVentaAdmin() {
     } finally {
       setCargando(false);
     }
+  }
+
+  async function refrescarCajaActual() {
+    const data = await obtenerCajaActual();
+    setCaja(data.caja || null);
   }
 
   async function cargarProductosVenta() {
@@ -154,37 +173,65 @@ export default function NuevaVentaAdmin() {
     setError("");
   }
 
-  async function cerrarCajaActual() {
+  function cerrarCajaActual() {
     if (itemsVenta.length > 0) {
       setError("Finalice o limpie la venta actual antes de cerrar caja.");
       setMenuVentaAbierto(false);
       return;
     }
 
-    const confirmado = window.confirm("¿Desea cerrar la caja registradora?");
-    if (!confirmado) return;
+    setMenuVentaAbierto(false);
+    navigate("/admin/caja?accion=cerrar");
+  }
 
-    setGuardando(true);
-    setError("");
+  function abrirModalMovimientoCaja() {
+    if (!caja) {
+      setError("No existe una caja registradora abierta.");
+      setMenuVentaAbierto(false);
+      return;
+    }
+
+    setMovimientoCaja(movimientoInicial);
     setMensaje("");
+    setError("");
+    setMenuVentaAbierto(false);
+    setMostrarMovimientoCaja(true);
+  }
+
+  function cerrarModalMovimientoCaja() {
+    if (guardando) return;
+    setMostrarMovimientoCaja(false);
+    setMovimientoCaja(movimientoInicial);
+  }
+
+  function handleMovimientoCajaChange(event) {
+    const { name, value } = event.target;
+    setMovimientoCaja((actual) => ({ ...actual, [name]: value }));
+  }
+
+  async function guardarMovimientoCaja(event) {
+    event.preventDefault();
+    setGuardando(true);
+    setMensaje("");
+    setError("");
 
     try {
-      const resultado = await cerrarCaja();
-      setCaja(null);
-      setVistaCaja(false);
-      iniciarNuevaVenta();
-      setMensaje(resultado.mensaje || "Caja cerrada correctamente.");
+      const resultado = await registrarMovimientoCaja(movimientoCaja);
+      setMostrarMovimientoCaja(false);
+      setMovimientoCaja(movimientoInicial);
+      setMensaje(resultado.mensaje || "Movimiento de caja registrado correctamente.");
+      await refrescarCajaActual();
     } catch (err) {
       if (err.response?.status === 401) {
         cerrarSesion();
         return;
       }
-      setError(err.response?.data?.mensaje || "No se pudo cerrar la caja registradora.");
+      setError(err.response?.data?.mensaje || "No se pudo registrar el movimiento de caja.");
     } finally {
       setGuardando(false);
-      setMenuVentaAbierto(false);
     }
   }
+
   function aplicarCantidadAItem(itemId, cantidadTexto) {
     const item = itemsVenta.find((producto) => producto.id === itemId);
     if (!item || !cantidadTexto) return true;
@@ -327,6 +374,7 @@ export default function NuevaVentaAdmin() {
       iniciarNuevaVenta();
       setMensaje(venta.mensaje || "Venta registrada correctamente.");
       await cargarProductosVenta();
+      await refrescarCajaActual();
     } catch (err) {
       if (err.response?.status === 401) {
         cerrarSesion();
@@ -388,6 +436,7 @@ export default function NuevaVentaAdmin() {
             {menuVentaAbierto && (
               <div className="pos-quick-menu" role="menu">
                 <button type="button" role="menuitem" onClick={volverAlPanelCaja}>Volver al panel</button>
+                <button type="button" role="menuitem" onClick={abrirModalMovimientoCaja}>Entrada/salida de efectivo</button>
                 <button type="button" role="menuitem" className="danger" onClick={cerrarCajaActual}>Cerrar caja</button>
               </div>
             )}
@@ -408,7 +457,7 @@ export default function NuevaVentaAdmin() {
         )}
 
         {mensaje && <p className="success-message admin-feedback pos-success-message">{mensaje}</p>}
-        {!mostrarFormulario && !mostrarPago && error && <p className="error-message admin-feedback pos-error-message">{error}</p>}
+        {!mostrarFormulario && !mostrarPago && !mostrarMovimientoCaja && error && <p className="error-message admin-feedback pos-error-message">{error}</p>}
 
         {cargando && (
           <section className="sales-panel compact-sales-panel">
@@ -571,6 +620,44 @@ export default function NuevaVentaAdmin() {
               <div className="form-actions full-field">
                 <button className="admin-primary" type="submit" disabled={guardando}>{guardando ? "Abriendo..." : "Confirmar apertura"}</button>
                 <button className="admin-secondary" type="button" onClick={cerrarFormularioCaja} disabled={guardando}>Cancelar</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {mostrarMovimientoCaja && (
+        <div className="product-modal-backdrop" role="presentation">
+          <section className="product-modal cash-modal" role="dialog" aria-modal="true" aria-labelledby="cash-movement-title">
+            <header className="product-modal-header">
+              <h3 id="cash-movement-title">Entrada/salida de efectivo</h3>
+              <button type="button" aria-label="Cerrar" onClick={cerrarModalMovimientoCaja}>x</button>
+            </header>
+
+            <form className="producto-form compact-product-form cash-form" onSubmit={guardarMovimientoCaja}>
+              <label className="full-field">
+                Tipo de movimiento
+                <select name="tipo" value={movimientoCaja.tipo} onChange={handleMovimientoCajaChange}>
+                  <option value="INGRESO">Entrada</option>
+                  <option value="EGRESO">Salida</option>
+                </select>
+              </label>
+
+              <label className="full-field">
+                Monto
+                <input name="monto" type="number" min="0.01" step="0.01" value={movimientoCaja.monto} onChange={handleMovimientoCajaChange} required autoFocus />
+              </label>
+
+              <label className="full-field">
+                Descripción
+                <textarea name="descripcion" value={movimientoCaja.descripcion} onChange={handleMovimientoCajaChange} required />
+              </label>
+
+              {error && <p className="error-message full-field">{error}</p>}
+
+              <div className="form-actions full-field">
+                <button className="admin-primary" type="submit" disabled={guardando}>{guardando ? "Registrando..." : "Registrar movimiento"}</button>
+                <button className="admin-secondary" type="button" onClick={cerrarModalMovimientoCaja} disabled={guardando}>Cancelar</button>
               </div>
             </form>
           </section>

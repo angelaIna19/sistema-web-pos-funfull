@@ -18,15 +18,33 @@ export default function AdminNavbar({
   showToolbar = true,
   forceToolbar = false,
   newButtonLabel = "Nuevo",
+  editButtonLabel = "Editar",
+  deleteButtonLabel = "Eliminar",
+  showEditButton = true,
+  showDeleteButton = true,
   showEditDelete = true,
   showSearch = true,
   showToolbarActions = true,
+  showNewButton = true,
 }) {
   const location = useLocation();
+  const pathname = location.pathname;
   const [mostrarProductos, setMostrarProductos] = useState(
-    location.pathname.startsWith("/admin/productos") || location.pathname.startsWith("/admin/categorias")
+    pathname.startsWith("/admin/productos") || pathname.startsWith("/admin/categorias")
   );
   const [menuAbierto, setMenuAbierto] = useState(null);
+
+  const moduloActivo = pathname.startsWith("/admin/ventas")
+    ? "ventas"
+    : pathname.startsWith("/admin/caja")
+      ? "caja"
+      : pathname.startsWith("/admin/productos") || pathname.startsWith("/admin/categorias")
+        ? "producto"
+        : pathname.startsWith("/admin/inventario")
+          ? "inventario"
+          : pathname.startsWith("/admin/reportes")
+            ? "reportes"
+            : "";
 
   function cerrarMenu() {
     setMenuAbierto(null);
@@ -47,6 +65,10 @@ export default function AdminNavbar({
     onChangeVista?.(vista);
   }
 
+  function triggerClass(modulo) {
+    return moduloActivo === modulo ? "admin-menu-trigger is-active" : "admin-menu-trigger";
+  }
+
   return (
     <header className="admin-topbar clean-admin-topbar" onMouseLeave={cerrarMenu}>
       <div className="admin-topbar-row primary">
@@ -57,20 +79,19 @@ export default function AdminNavbar({
 
         <nav className="admin-module-tabs" aria-label="Módulos administrativos">
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("ventas")}>
-            <button className="admin-menu-trigger" type="button">Ventas</button>
+            <button className={triggerClass("ventas")} type="button">Ventas</button>
             {menuAbierto === "ventas" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <Link to="/admin/ventas/nueva" role="menuitem" onClick={cerrarMenu}>Nueva venta</Link>
                 <Link to="/admin/ventas/historial" role="menuitem" onClick={cerrarMenu}>Historial de ventas</Link>
-                <Link to="/admin/ventas/historial" role="menuitem" onClick={cerrarMenu}>Detalle de ventas</Link>
-                <button type="button" role="menuitem">Anular venta</button>
+                <Link to="/admin/ventas/historial?modo=detalle" role="menuitem" onClick={cerrarMenu}>Detalle de ventas</Link>
+                <Link to="/admin/ventas/historial?modo=anular" role="menuitem" onClick={cerrarMenu}>Anular venta</Link>
               </div>
             )}
           </div>
 
-
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("caja")}>
-            <button className="admin-menu-trigger" type="button">Caja</button>
+            <button className={triggerClass("caja")} type="button">Caja</button>
             {menuAbierto === "caja" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <Link to="/admin/caja" role="menuitem" onClick={cerrarMenu}>Caja actual</Link>
@@ -80,20 +101,19 @@ export default function AdminNavbar({
               </div>
             )}
           </div>
+
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("producto")}>
-            <button className="admin-menu-trigger" type="button">Producto</button>
+            <button className={triggerClass("producto")} type="button">Producto</button>
             {menuAbierto === "producto" && (
               <div className="admin-dropdown-menu is-open" role="menu">
-                <Link to="/admin/productos" role="menuitem" onClick={abrirSeccionProductos}>
-                  Productos
-                </Link>
+                <Link to="/admin/productos" role="menuitem" onClick={abrirSeccionProductos}>Productos</Link>
                 <Link to="/admin/categorias" role="menuitem" onClick={abrirSeccionProductos}>Categorías</Link>
               </div>
             )}
           </div>
 
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("inventario")}>
-            <button className="admin-menu-trigger" type="button">Inventario</button>
+            <button className={triggerClass("inventario")} type="button">Inventario</button>
             {menuAbierto === "inventario" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <button type="button" role="menuitem">Entradas</button>
@@ -105,7 +125,7 @@ export default function AdminNavbar({
           </div>
 
           <div className="admin-menu-item" onMouseEnter={() => setMenuAbierto("reportes")}>
-            <button className="admin-menu-trigger" type="button">Reportes</button>
+            <button className={triggerClass("reportes")} type="button">Reportes</button>
             {menuAbierto === "reportes" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <button type="button" role="menuitem">Reporte de ventas</button>
@@ -124,12 +144,18 @@ export default function AdminNavbar({
 
       {showToolbar && (mostrarProductos || forceToolbar) && (
         <div className="admin-topbar-row secondary">
-          <button className="admin-new-button" type="button" onClick={abrirNuevoProducto}>{newButtonLabel}</button>
+          {showNewButton && (
+            <button className="admin-new-button" type="button" onClick={abrirNuevoProducto}>{newButtonLabel}</button>
+          )}
 
           {showEditDelete && (
             <>
-              <button className="admin-toolbar-button" type="button" onClick={onEditProduct} disabled={!productoSeleccionado}>Editar</button>
-              <button className="admin-toolbar-button danger" type="button" onClick={onDeleteProduct} disabled={!productoSeleccionado}>Eliminar</button>
+              {showEditButton && (
+                <button className="admin-toolbar-button" type="button" onClick={onEditProduct} disabled={!productoSeleccionado}>{editButtonLabel}</button>
+              )}
+              {showDeleteButton && (
+                <button className="admin-toolbar-button danger" type="button" onClick={onDeleteProduct} disabled={!productoSeleccionado}>{deleteButtonLabel}</button>
+              )}
             </>
           )}
 
@@ -143,9 +169,9 @@ export default function AdminNavbar({
             <div className="admin-search-box">
               <span aria-hidden="true">Buscar</span>
               <span className="admin-filter-chip">{searchFilter}</span>
-              <button className="admin-filter-close" type="button" aria-label="Limpiar busqueda" onClick={() => onSearchChange?.("")}>x</button>
+              <button className="admin-filter-close" type="button" aria-label="Limpiar búsqueda" onClick={() => onSearchChange?.("")}>x</button>
               <input
-                aria-label="Buscar producto"
+                aria-label="Buscar"
                 placeholder="Buscar..."
                 value={terminoBusqueda}
                 onChange={(event) => onSearchChange?.(event.target.value)}

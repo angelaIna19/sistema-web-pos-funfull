@@ -90,8 +90,15 @@ export async function abrirCaja(datos) {
   return respuesta.data;
 }
 
-export async function cerrarCaja() {
-  const respuesta = await axios.post(`${API_URL}/admin/caja/cerrar`, {}, {
+export async function cerrarCaja(datos = {}) {
+  const respuesta = await axios.post(`${API_URL}/admin/caja/cerrar`, datos, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function registrarMovimientoCaja(datos) {
+  const respuesta = await axios.post(`${API_URL}/admin/caja/movimientos`, datos, {
     headers: getAuthHeaders(),
   });
   return respuesta.data;
@@ -112,6 +119,13 @@ export async function obtenerVentas() {
 
 export async function obtenerDetalleVenta(id) {
   const respuesta = await axios.get(`${API_URL}/admin/ventas/${id}`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function anularVenta(id, datos) {
+  const respuesta = await axios.post(`${API_URL}/admin/ventas/${id}/anular`, datos, {
     headers: getAuthHeaders(),
   });
   return respuesta.data;

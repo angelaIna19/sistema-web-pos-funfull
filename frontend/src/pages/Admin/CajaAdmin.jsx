@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import { abrirCaja, cerrarCaja, obtenerCajaActual, obtenerCajas } from "../../services/api";
@@ -9,6 +9,11 @@ const formularioInicial = {
   observacion: "",
 };
 
+const cierreInicial = {
+  montoContado: "",
+  observacionCierre: "",
+};
+
 export default function CajaAdmin({ modo = "actual" }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -17,11 +22,19 @@ export default function CajaAdmin({ modo = "actual" }) {
   const [cajaActual, setCajaActual] = useState(null);
   const [cajas, setCajas] = useState([]);
   const [formulario, setFormulario] = useState(formularioInicial);
+  const [formularioCierre, setFormularioCierre] = useState(cierreInicial);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mostrarCierre, setMostrarCierre] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
+
+  const resumenCierre = useMemo(() => calcularResumenCaja(cajaActual), [cajaActual]);
+  const montoContadoNumero = Number(formularioCierre.montoContado || 0);
+  const diferenciaCierre = formularioCierre.montoContado === ""
+    ? null
+    : roundMoney(montoContadoNumero - resumenCierre.montoEsperado);
 
   async function cargarCaja() {
     setCargando(true);
@@ -63,7 +76,7 @@ export default function CajaAdmin({ modo = "actual" }) {
     }
 
     if (accion === "cerrar" && cajaActual) {
-      cerrarCajaActual();
+      abrirModalCierre();
     }
   }, [modo, cargando, cajaActual, searchParams]);
 
@@ -78,6 +91,11 @@ export default function CajaAdmin({ modo = "actual" }) {
     setFormulario((actual) => ({ ...actual, [name]: value }));
   }
 
+  function handleCierreChange(event) {
+    const { name, value } = event.target;
+    setFormularioCierre((actual) => ({ ...actual, [name]: value }));
+  }
+
   function abrirFormularioCaja() {
     setFormulario(formularioInicial);
     setMensaje("");
@@ -89,6 +107,20 @@ export default function CajaAdmin({ modo = "actual" }) {
     if (guardando) return;
     setMostrarFormulario(false);
     setFormulario(formularioInicial);
+  }
+
+  function abrirModalCierre() {
+    if (!cajaActual) return;
+    setFormularioCierre(cierreInicial);
+    setMensaje("");
+    setError("");
+    setMostrarCierre(true);
+  }
+
+  function cerrarModalCierre() {
+    if (guardando) return;
+    setMostrarCierre(false);
+    setFormularioCierre(cierreInicial);
   }
 
   async function guardarAperturaCaja(event) {
@@ -115,18 +147,18 @@ export default function CajaAdmin({ modo = "actual" }) {
     }
   }
 
-  async function cerrarCajaActual() {
+  async function guardarCierreCaja(event) {
+    event.preventDefault();
     if (!cajaActual) return;
-
-    const confirmado = window.confirm("¿Desea cerrar la caja registradora?");
-    if (!confirmado) return;
 
     setGuardando(true);
     setMensaje("");
     setError("");
 
     try {
-      const resultado = await cerrarCaja();
+      const resultado = await cerrarCaja(formularioCierre);
+      setMostrarCierre(false);
+      setFormularioCierre(cierreInicial);
       setMensaje(resultado.mensaje || "Caja cerrada correctamente.");
       navigate("/admin/caja", { replace: true });
       await cargarCaja();
@@ -153,7 +185,7 @@ export default function CajaAdmin({ modo = "actual" }) {
         </header>
 
         {mensaje && <p className="success-message admin-feedback">{mensaje}</p>}
-        {error && <p className="error-message admin-feedback">{error}</p>}
+        {error && !mostrarFormulario && !mostrarCierre && <p className="error-message admin-feedback">{error}</p>}
 
         {cargando && <section className="sales-panel compact-sales-panel"><p>Consultando caja...</p></section>}
 
@@ -161,40 +193,8 @@ export default function CajaAdmin({ modo = "actual" }) {
         {!cargando && modo === "historial" && renderHistorial()}
       </main>
 
-      {mostrarFormulario && (
-        <div className="product-modal-backdrop" role="presentation">
-          <section className="product-modal cash-modal" role="dialog" aria-modal="true" aria-labelledby="cash-modal-title">
-            <header className="product-modal-header">
-              <h3 id="cash-modal-title">Abrir caja registradora</h3>
-              <button type="button" aria-label="Cerrar" onClick={cerrarFormularioCaja}>x</button>
-            </header>
-
-            <form className="producto-form compact-product-form cash-form" onSubmit={guardarAperturaCaja}>
-              <label className="full-field">
-                Nombre del trabajador
-                <input name="nombreTrabajador" value={formulario.nombreTrabajador} onChange={handleChange} required autoFocus />
-              </label>
-
-              <label className="full-field">
-                Monto inicial
-                <input name="montoInicial" type="number" min="0" step="0.01" value={formulario.montoInicial} onChange={handleChange} required />
-              </label>
-
-              <label className="full-field">
-                Observación
-                <textarea name="observacion" value={formulario.observacion} onChange={handleChange} />
-              </label>
-
-              {error && <p className="error-message full-field">{error}</p>}
-
-              <div className="form-actions full-field">
-                <button className="admin-primary" type="submit" disabled={guardando}>{guardando ? "Abriendo..." : "Confirmar apertura"}</button>
-                <button className="admin-secondary" type="button" onClick={cerrarFormularioCaja} disabled={guardando}>Cancelar</button>
-              </div>
-            </form>
-          </section>
-        </div>
-      )}
+      {mostrarFormulario && renderModalApertura()}
+      {mostrarCierre && renderModalCierre()}
     </>
   );
 
@@ -209,13 +209,16 @@ export default function CajaAdmin({ modo = "actual" }) {
                 <span>Por cerrar</span>
               </div>
               <button className="admin-primary" type="button" onClick={() => navigate("/admin/ventas/nueva")}>Seguir vendiendo</button>
-              <button className="admin-secondary danger-action" type="button" onClick={cerrarCajaActual} disabled={guardando}>Cerrar caja</button>
+              <button className="admin-secondary danger-action" type="button" onClick={abrirModalCierre} disabled={guardando}>Cerrar caja</button>
               <dl className="cash-dashboard-summary">
                 <div><dt>Trabajador</dt><dd>{cajaActual.nombreTrabajador || "-"}</dd></div>
                 <div><dt>Estado</dt><dd>{cajaActual.estado}</dd></div>
                 <div><dt>Apertura</dt><dd>{formatDateTime(cajaActual.abiertaEn)}</dd></div>
-                <div><dt>Monto inicial</dt><dd>${Number(cajaActual.montoInicial || 0).toFixed(2)}</dd></div>
-                <div><dt>Vendido</dt><dd>${Number(cajaActual.vendido || 0).toFixed(2)}</dd></div>
+                <div><dt>Monto inicial</dt><dd>{formatMoney(cajaActual.montoInicial)}</dd></div>
+                <div><dt>Vendido</dt><dd>{formatMoney(cajaActual.vendido)}</dd></div>
+                <div><dt>Entradas</dt><dd>{formatMoney(cajaActual.ingresosManuales)}</dd></div>
+                <div><dt>Salidas</dt><dd>{formatMoney(cajaActual.egresosManuales)}</dd></div>
+                <div><dt>Esperado en caja</dt><dd>{formatMoney(cajaActual.montoEsperado)}</dd></div>
                 <div><dt>Ventas</dt><dd>{Number(cajaActual.ventas || 0)}</dd></div>
               </dl>
             </div>
@@ -249,6 +252,9 @@ export default function CajaAdmin({ modo = "actual" }) {
                     <th>Cierre</th>
                     <th>Inicial</th>
                     <th>Vendido</th>
+                    <th>Esperado</th>
+                    <th>Contado</th>
+                    <th>Diferencia</th>
                     <th>Ventas</th>
                   </tr>
                 </thead>
@@ -259,8 +265,11 @@ export default function CajaAdmin({ modo = "actual" }) {
                       <td>{caja.estado}</td>
                       <td>{formatDateTime(caja.abiertaEn)}</td>
                       <td>{caja.cerradaEn ? formatDateTime(caja.cerradaEn) : "-"}</td>
-                      <td>${Number(caja.montoInicial || 0).toFixed(2)}</td>
-                      <td>${Number(caja.vendido || 0).toFixed(2)}</td>
+                      <td>{formatMoney(caja.montoInicial)}</td>
+                      <td>{formatMoney(caja.vendido)}</td>
+                      <td>{caja.montoEsperado === null ? "-" : formatMoney(caja.montoEsperado)}</td>
+                      <td>{caja.montoContado === null ? "-" : formatMoney(caja.montoContado)}</td>
+                      <td className={getDiferenciaClass(caja.diferencia)}>{caja.diferencia === null ? "-" : formatMoney(caja.diferencia)}</td>
                       <td>{Number(caja.ventas || 0)}</td>
                     </tr>
                   ))}
@@ -272,6 +281,119 @@ export default function CajaAdmin({ modo = "actual" }) {
       </section>
     );
   }
+
+  function renderModalApertura() {
+    return (
+      <div className="product-modal-backdrop" role="presentation">
+        <section className="product-modal cash-modal" role="dialog" aria-modal="true" aria-labelledby="cash-modal-title">
+          <header className="product-modal-header">
+            <h3 id="cash-modal-title">Abrir caja registradora</h3>
+            <button type="button" aria-label="Cerrar" onClick={cerrarFormularioCaja}>x</button>
+          </header>
+
+          <form className="producto-form compact-product-form cash-form" onSubmit={guardarAperturaCaja}>
+            <label className="full-field">
+              Nombre del trabajador
+              <input name="nombreTrabajador" value={formulario.nombreTrabajador} onChange={handleChange} required autoFocus />
+            </label>
+
+            <label className="full-field">
+              Monto inicial
+              <input name="montoInicial" type="number" min="0" step="0.01" value={formulario.montoInicial} onChange={handleChange} required />
+            </label>
+
+            <label className="full-field">
+              Observación
+              <textarea name="observacion" value={formulario.observacion} onChange={handleChange} />
+            </label>
+
+            {error && <p className="error-message full-field">{error}</p>}
+
+            <div className="form-actions full-field">
+              <button className="admin-primary" type="submit" disabled={guardando}>{guardando ? "Abriendo..." : "Confirmar apertura"}</button>
+              <button className="admin-secondary" type="button" onClick={cerrarFormularioCaja} disabled={guardando}>Cancelar</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    );
+  }
+
+  function renderModalCierre() {
+    return (
+      <div className="product-modal-backdrop" role="presentation">
+        <section className="product-modal cash-modal cash-close-modal" role="dialog" aria-modal="true" aria-labelledby="cash-close-title">
+          <header className="product-modal-header">
+            <h3 id="cash-close-title">Cerrar caja</h3>
+            <button type="button" aria-label="Cerrar" onClick={cerrarModalCierre}>x</button>
+          </header>
+
+          <form className="producto-form compact-product-form cash-form" onSubmit={guardarCierreCaja}>
+            <div className="cash-close-summary full-field">
+              <div><span>Trabajador</span><strong>{cajaActual?.nombreTrabajador || "-"}</strong></div>
+              <div><span>Monto inicial</span><strong>{formatMoney(cajaActual?.montoInicial)}</strong></div>
+              <div><span>Efectivo</span><strong>{formatMoney(resumenCierre.totalEfectivo)}</strong></div>
+              <div><span>Transferencia</span><strong>{formatMoney(resumenCierre.totalTransferencia)}</strong></div>
+              <div><span>Entradas</span><strong>{formatMoney(resumenCierre.ingresosManuales)}</strong></div>
+              <div><span>Salidas</span><strong>{formatMoney(resumenCierre.egresosManuales)}</strong></div>
+              <div><span>Total vendido</span><strong>{formatMoney(resumenCierre.totalVendido)}</strong></div>
+              <div><span>Esperado en caja</span><strong>{formatMoney(resumenCierre.montoEsperado)}</strong></div>
+            </div>
+
+            <label className="full-field">
+              Efectivo contado
+              <input name="montoContado" type="number" min="0" step="0.01" value={formularioCierre.montoContado} onChange={handleCierreChange} required autoFocus />
+            </label>
+
+            <label className="full-field">
+              Diferencia
+              <input value={diferenciaCierre === null ? "$0.00" : formatMoney(diferenciaCierre)} readOnly />
+            </label>
+
+            <label className="full-field">
+              Observación
+              <textarea name="observacionCierre" value={formularioCierre.observacionCierre} onChange={handleCierreChange} />
+            </label>
+
+            {error && <p className="error-message full-field">{error}</p>}
+
+            <div className="form-actions full-field">
+              <button className="admin-primary" type="submit" disabled={guardando || formularioCierre.montoContado === ""}>{guardando ? "Cerrando..." : "Confirmar cierre"}</button>
+              <button className="admin-secondary" type="button" onClick={cerrarModalCierre} disabled={guardando}>Cancelar</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    );
+  }
+}
+
+function calcularResumenCaja(caja) {
+  const totalVendido = Number(caja?.vendido || 0);
+  const totalEfectivo = Number(caja?.totalEfectivo || 0);
+  const totalTransferencia = Number(caja?.totalTransferencia || 0);
+  const ingresosManuales = Number(caja?.ingresosManuales || 0);
+  const egresosManuales = Number(caja?.egresosManuales || 0);
+  const montoInicial = Number(caja?.montoInicial || 0);
+  const montoEsperado = caja?.montoEsperado === null || caja?.montoEsperado === undefined
+    ? roundMoney(montoInicial + totalEfectivo + ingresosManuales - egresosManuales)
+    : Number(caja.montoEsperado);
+
+  return { totalVendido, totalEfectivo, totalTransferencia, ingresosManuales, egresosManuales, montoEsperado };
+}
+
+function getDiferenciaClass(value) {
+  const diferencia = Number(value || 0);
+  if (value === null || value === undefined || diferencia === 0) return "";
+  return diferencia > 0 ? "cash-difference-positive" : "cash-difference-negative";
+}
+
+function formatMoney(value) {
+  return `$${Number(value || 0).toFixed(2)}`;
+}
+
+function roundMoney(value) {
+  return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 }
 
 function formatDateTime(value) {
@@ -283,3 +405,4 @@ function formatDateTime(value) {
     minute: "2-digit",
   }).format(new Date(value));
 }
+
