@@ -1,4 +1,4 @@
-﻿const { query } = require("../config/db");
+const { query } = require("../config/db");
 const env = require("../config/env");
 const { hashPassword } = require("../utils/password");
 
@@ -101,6 +101,14 @@ async function initCashRegisterTable() {
   `);
 
   await query(`
+    ALTER TABLE cajas
+    ADD COLUMN IF NOT EXISTS monto_contado NUMERIC(10, 2) CHECK (monto_contado >= 0),
+    ADD COLUMN IF NOT EXISTS monto_esperado NUMERIC(10, 2) CHECK (monto_esperado >= 0),
+    ADD COLUMN IF NOT EXISTS diferencia NUMERIC(10, 2),
+    ADD COLUMN IF NOT EXISTS observacion_cierre TEXT;
+  `);
+
+  await query(`
     CREATE UNIQUE INDEX IF NOT EXISTS cajas_abierta_unica
     ON cajas (estado)
     WHERE estado = 'ABIERTA';
@@ -133,6 +141,23 @@ async function initSalesTables() {
   await query(`
     ALTER TABLE ventas
     ADD CONSTRAINT ventas_metodo_pago_check CHECK (metodo_pago IN ('EFECTIVO', 'TRANSFERENCIA'));
+  `);
+
+  await query(`
+    ALTER TABLE ventas
+    ADD COLUMN IF NOT EXISTS estado VARCHAR(20) NOT NULL DEFAULT 'REGISTRADA',
+    ADD COLUMN IF NOT EXISTS motivo_anulacion TEXT,
+    ADD COLUMN IF NOT EXISTS anulada_en TIMESTAMP;
+  `);
+
+  await query(`
+    ALTER TABLE ventas
+    DROP CONSTRAINT IF EXISTS ventas_estado_check;
+  `);
+
+  await query(`
+    ALTER TABLE ventas
+    ADD CONSTRAINT ventas_estado_check CHECK (estado IN ('REGISTRADA', 'ANULADA'));
   `);
 
   await query(`

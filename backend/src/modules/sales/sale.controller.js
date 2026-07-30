@@ -1,4 +1,4 @@
-﻿const saleService = require("./sale.service");
+const saleService = require("./sale.service");
 
 async function create(req, res) {
   try {
@@ -33,4 +33,15 @@ async function detail(req, res) {
   }
 }
 
-module.exports = { create, list, detail };
+async function cancel(req, res) {
+  try {
+    const venta = await saleService.cancelSale(req.params.id, req.body);
+    res.json(venta);
+  } catch (error) {
+    res.status(error.status || 503).json({
+      mensaje: error.status ? error.message : "No se pudo anular la venta.",
+    });
+  }
+}
+
+module.exports = { cancel, create, list, detail };

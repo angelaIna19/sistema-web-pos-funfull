@@ -1,4 +1,4 @@
-﻿const { pool } = require("../../config/db");
+const { pool } = require("../../config/db");
 
 function mapVenta(row) {
   return {
@@ -14,6 +14,9 @@ function mapVenta(row) {
     montoRecibido: Number(row.monto_recibido),
     cambio: Number(row.cambio),
     observacion: row.observacion || "",
+    estado: row.estado || "REGISTRADA",
+    motivoAnulacion: row.motivo_anulacion || "",
+    anuladaEn: row.anulada_en || null,
     creadaEn: row.creada_en,
   };
 }
@@ -187,11 +190,82 @@ async function createSaleTransaction(data) {
   }
 }
 
+async function cancelSaleTransaction(id, data) {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const saleResult = await client.query(
+      `SELECT *
+       FROM ventas
+       WHERE id = $1
+       FOR UPDATE`,
+      [id]
+    );
+    const venta = saleResult.rows[0] || null;
+
+    if (!venta) {
+      const error = new Error("Venta no encontrada.");
+      error.status = 404;
+      throw error;
+    }
+
+    if (venta.estado === "ANULADA") {
+      const error = new Error("La venta ya se encuentra anulada.");
+      error.status = 400;
+      throw error;
+    }
+
+    const detailsResult = await client.query(
+      `SELECT producto_id, cantidad
+       FROM venta_detalles
+       WHERE venta_id = $1`,
+      [id]
+    );
+
+    for (const detalle of detailsResult.rows) {
+      await client.query(
+        `UPDATE productos
+         SET stock = stock + $1,
+             actualizado_en = CURRENT_TIMESTAMP
+         WHERE id = $2`,
+        [detalle.cantidad, detalle.producto_id]
+      );
+    }
+
+    const updatedResult = await client.query(
+      `UPDATE ventas
+       SET estado = 'ANULADA',
+           motivo_anulacion = $1,
+           anulada_en = CURRENT_TIMESTAMP
+       WHERE id = $2
+       RETURNING *`,
+      [data.motivoAnulacion, id]
+    );
+
+    await client.query(
+      `INSERT INTO caja_movimientos (caja_id, venta_id, tipo, monto, descripcion)
+       VALUES ($1, $2, 'EGRESO', $3, $4)`,
+      [venta.caja_id, venta.id, Number(venta.total), `Anulación de venta #${venta.id}: ${data.motivoAnulacion}`]
+    );
+
+    await client.query("COMMIT");
+    return mapVenta(updatedResult.rows[0]);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 function roundMoney(value) {
   return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 }
 
 module.exports = {
+  cancelSaleTransaction,
   createSaleTransaction,
   findAllSales,
   findSaleById,

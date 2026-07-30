@@ -31,7 +31,7 @@ async function open(req, res) {
 
 async function close(req, res) {
   try {
-    const resultado = await cashRegisterService.closeCashRegister(req.admin);
+    const resultado = await cashRegisterService.closeCashRegister(req.admin, req.body);
     res.json(resultado);
   } catch (error) {
     res.status(error.status || 503).json({
@@ -40,4 +40,15 @@ async function close(req, res) {
   }
 }
 
-module.exports = { current, history, open, close };
+async function movement(req, res) {
+  try {
+    const resultado = await cashRegisterService.createCashMovement(req.admin, req.body);
+    res.status(201).json(resultado);
+  } catch (error) {
+    res.status(error.status || 503).json({
+      mensaje: error.status ? error.message : "No se pudo registrar el movimiento de caja.",
+    });
+  }
+}
+
+module.exports = { current, history, open, close, movement };

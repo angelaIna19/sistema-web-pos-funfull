@@ -1,4 +1,4 @@
-﻿const saleRepository = require("./sale.repository");
+const saleRepository = require("./sale.repository");
 
 const TAX_RATE = 0.15;
 
@@ -40,14 +40,7 @@ async function listSales() {
 }
 
 async function getSaleDetail(id) {
-  const ventaId = Number(id);
-
-  if (!Number.isInteger(ventaId) || ventaId <= 0) {
-    const error = new Error("La venta solicitada no es válida.");
-    error.status = 400;
-    throw error;
-  }
-
+  const ventaId = normalizeSaleId(id);
   const venta = await saleRepository.findSaleById(ventaId);
 
   if (!venta) {
@@ -58,6 +51,36 @@ async function getSaleDetail(id) {
 
   const detalles = await saleRepository.findSaleDetails(ventaId);
   return { ...venta, detalles };
+}
+
+async function cancelSale(id, body = {}) {
+  const ventaId = normalizeSaleId(id);
+  const motivoAnulacion = body.motivoAnulacion ? String(body.motivoAnulacion).trim() : "";
+
+  if (!motivoAnulacion) {
+    const error = new Error("El motivo de anulación es obligatorio.");
+    error.status = 400;
+    throw error;
+  }
+
+  const venta = await saleRepository.cancelSaleTransaction(ventaId, { motivoAnulacion });
+
+  return {
+    ...venta,
+    mensaje: "Venta anulada correctamente.",
+  };
+}
+
+function normalizeSaleId(id) {
+  const ventaId = Number(id);
+
+  if (!Number.isInteger(ventaId) || ventaId <= 0) {
+    const error = new Error("La venta solicitada no es válida.");
+    error.status = 400;
+    throw error;
+  }
+
+  return ventaId;
 }
 
 function normalizeItems(rawItems) {
@@ -91,4 +114,4 @@ function normalizeItems(rawItems) {
   return Array.from(grouped, ([productoId, cantidad]) => ({ productoId, cantidad }));
 }
 
-module.exports = { createSale, listSales, getSaleDetail };
+module.exports = { cancelSale, createSale, listSales, getSaleDetail };
