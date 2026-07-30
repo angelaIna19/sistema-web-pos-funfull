@@ -1,4 +1,4 @@
-const express = require("express");
+﻿const express = require("express");
 const cors = require("cors");
 const { query } = require("./config/db");
 const authRoutes = require("./modules/auth/auth.routes");
@@ -6,6 +6,8 @@ const productRoutes = require("./modules/products/product.routes");
 const categoryRoutes = require("./modules/categories/category.routes");
 const cashRegisterRoutes = require("./modules/cashRegister/cashRegister.routes");
 const saleRoutes = require("./modules/sales/sale.routes");
+const inventoryRoutes = require("./modules/inventory/inventory.routes");
+const reportRoutes = require("./modules/reports/report.routes");
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.use("/api", productRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", cashRegisterRoutes);
 app.use("/api", saleRoutes);
+app.use("/api", inventoryRoutes);
+app.use("/api", reportRoutes);
 
 module.exports = app;
 

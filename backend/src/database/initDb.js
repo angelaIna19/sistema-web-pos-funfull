@@ -1,4 +1,4 @@
-const { query } = require("../config/db");
+﻿const { query } = require("../config/db");
 const env = require("../config/env");
 const { hashPassword } = require("../utils/password");
 
@@ -17,6 +17,7 @@ async function initDb() {
   await initCategoriesTable();
   await initCashRegisterTable();
   await initSalesTables();
+  await initInventoryTable();
   await seedAdmin();
 }
 
@@ -185,6 +186,22 @@ async function initSalesTables() {
   `);
 }
 
+async function initInventoryTable() {
+  await query(`
+    CREATE TABLE IF NOT EXISTS inventario_movimientos (
+      id SERIAL PRIMARY KEY,
+      producto_id INTEGER NOT NULL REFERENCES productos(id),
+      usuario_id INTEGER NOT NULL REFERENCES usuarios_admin(id),
+      tipo VARCHAR(20) NOT NULL,
+      cantidad_anterior INTEGER NOT NULL CHECK (cantidad_anterior >= 0),
+      cantidad_movimiento INTEGER NOT NULL,
+      cantidad_nueva INTEGER NOT NULL CHECK (cantidad_nueva >= 0),
+      motivo TEXT NOT NULL,
+      creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT inventario_movimientos_tipo_check CHECK (tipo IN ('ENTRADA', 'SALIDA', 'AJUSTE'))
+    );
+  `);
+}
 async function seedAdmin() {
   const adminCount = await query("SELECT COUNT(*)::int AS total FROM usuarios_admin");
 
@@ -197,3 +214,4 @@ async function seedAdmin() {
 }
 
 module.exports = { initDb };
+
