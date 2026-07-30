@@ -145,4 +145,121 @@ async function getLowStockProducts() {
   }));
 }
 
-module.exports = { getLowStockProducts, getOrdersReport, getSalesReport, getTopProducts };
+async function getCashBoxSalesReport(cajaId) {
+  const cajaResult = await query(
+    `SELECT c.*,
+            u.usuario,
+            COALESCE(vs.vendido, 0) AS vendido,
+            COALESCE(vs.total_efectivo, 0) AS total_efectivo,
+            COALESCE(vs.total_transferencia, 0) AS total_transferencia,
+            COALESCE(vs.ventas_registradas, 0)::int AS ventas_registradas,
+            COALESCE(vs.ventas_anuladas, 0)::int AS ventas_anuladas,
+            COALESCE(ms.ingresos_manuales, 0) AS ingresos_manuales,
+            COALESCE(ms.egresos_manuales, 0) AS egresos_manuales,
+            CASE
+              WHEN c.estado = 'ABIERTA'
+                THEN c.monto_inicial
+                     + COALESCE(vs.total_efectivo, 0)
+                     + COALESCE(ms.ingresos_manuales, 0)
+                     - COALESCE(ms.egresos_manuales, 0)
+              ELSE c.monto_esperado
+            END AS efectivo_esperado
+     FROM cajas c
+     JOIN usuarios_admin u ON u.id = c.usuario_id
+     LEFT JOIN (
+       SELECT caja_id,
+              SUM(total) FILTER (WHERE estado = 'REGISTRADA') AS vendido,
+              SUM(total) FILTER (WHERE estado = 'REGISTRADA' AND metodo_pago = 'EFECTIVO') AS total_efectivo,
+              SUM(total) FILTER (WHERE estado = 'REGISTRADA' AND metodo_pago = 'TRANSFERENCIA') AS total_transferencia,
+              COUNT(*) FILTER (WHERE estado = 'REGISTRADA')::int AS ventas_registradas,
+              COUNT(*) FILTER (WHERE estado = 'ANULADA')::int AS ventas_anuladas
+       FROM ventas
+       WHERE caja_id = $1
+       GROUP BY caja_id
+     ) vs ON vs.caja_id = c.id
+     LEFT JOIN (
+       SELECT caja_id,
+              SUM(CASE WHEN tipo = 'INGRESO' THEN monto ELSE 0 END) AS ingresos_manuales,
+              SUM(CASE WHEN tipo = 'EGRESO' THEN monto ELSE 0 END) AS egresos_manuales
+       FROM caja_movimientos
+       WHERE venta_id IS NULL AND caja_id = $1
+       GROUP BY caja_id
+     ) ms ON ms.caja_id = c.id
+     WHERE c.id = $1`,
+    [cajaId]
+  );
+
+  const caja = cajaResult.rows[0] || null;
+  if (!caja) return null;
+
+  const ventasResult = await query(
+    `SELECT v.id,
+            v.metodo_pago,
+            v.subtotal,
+            v.impuesto,
+            v.total,
+            v.estado,
+            v.creada_en,
+            c.nombre_trabajador
+     FROM ventas v
+     JOIN cajas c ON c.id = v.caja_id
+     WHERE v.caja_id = $1
+     ORDER BY v.creada_en DESC, v.id DESC`,
+    [cajaId]
+  );
+
+  const metodosResult = await query(
+    `SELECT metodo_pago,
+            COUNT(*)::int AS ventas,
+            COALESCE(SUM(total), 0)::numeric AS total
+     FROM ventas
+     WHERE caja_id = $1 AND estado = 'REGISTRADA'
+     GROUP BY metodo_pago
+     ORDER BY metodo_pago ASC`,
+    [cajaId]
+  );
+
+  return {
+    caja: {
+      id: caja.id,
+      usuario: caja.usuario,
+      nombreTrabajador: caja.nombre_trabajador,
+      estado: caja.estado,
+      montoInicial: mapMoney(caja.monto_inicial),
+      montoContado: caja.monto_contado === null ? null : mapMoney(caja.monto_contado),
+      montoEsperado: caja.efectivo_esperado === null ? null : mapMoney(caja.efectivo_esperado),
+      diferencia: caja.diferencia === null ? null : mapMoney(caja.diferencia),
+      vendido: mapMoney(caja.vendido),
+      totalEfectivo: mapMoney(caja.total_efectivo),
+      totalTransferencia: mapMoney(caja.total_transferencia),
+      ingresosManuales: mapMoney(caja.ingresos_manuales),
+      egresosManuales: mapMoney(caja.egresos_manuales),
+      abiertaEn: caja.abierta_en,
+      cerradaEn: caja.cerrada_en,
+    },
+    resumen: {
+      ventasRegistradas: Number(caja.ventas_registradas || 0),
+      ventasAnuladas: Number(caja.ventas_anuladas || 0),
+      totalEfectivo: mapMoney(caja.total_efectivo),
+      totalTransferencia: mapMoney(caja.total_transferencia),
+      totalVendido: mapMoney(caja.vendido),
+    },
+    metodosPago: metodosResult.rows.map((item) => ({
+      metodoPago: item.metodo_pago,
+      ventas: Number(item.ventas || 0),
+      total: mapMoney(item.total),
+    })),
+    ventas: ventasResult.rows.map((venta) => ({
+      id: venta.id,
+      trabajador: venta.nombre_trabajador,
+      metodoPago: venta.metodo_pago,
+      subtotal: mapMoney(venta.subtotal),
+      impuesto: mapMoney(venta.impuesto),
+      total: mapMoney(venta.total),
+      estado: venta.estado,
+      creadaEn: venta.creada_en,
+    })),
+  };
+}
+module.exports = { getCashBoxSalesReport, getLowStockProducts, getOrdersReport, getSalesReport, getTopProducts };
+

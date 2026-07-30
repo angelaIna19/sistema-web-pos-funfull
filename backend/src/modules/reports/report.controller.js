@@ -1,5 +1,14 @@
 ﻿const reportService = require("./report.service");
 
+async function cashBoxSales(req, res) {
+  try {
+    const reporte = await reportService.cashBoxSalesReport(req.query.cajaId);
+    res.json(reporte);
+  } catch (error) {
+    res.status(error.status || 503).json({ mensaje: error.status ? error.message : "No se pudo cargar el reporte de ventas por caja." });
+  }
+}
+
 async function sales(req, res) {
   try {
     const reporte = await reportService.salesReport();
@@ -36,4 +45,5 @@ async function lowStock(req, res) {
   }
 }
 
-module.exports = { lowStock, orders, sales, topProducts };
+module.exports = { cashBoxSales, lowStock, orders, sales, topProducts };
+
