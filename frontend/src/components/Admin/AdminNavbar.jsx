@@ -130,6 +130,7 @@ export default function AdminNavbar({
             {menuAbierto === "reportes" && (
               <div className="admin-dropdown-menu is-open" role="menu">
                 <Link to="/admin/reportes/ventas" role="menuitem" onClick={cerrarMenu}>Reporte de ventas</Link>
+                <Link to="/admin/reportes/ventas-por-caja" role="menuitem" onClick={cerrarMenu}>Ventas por caja</Link>
                 <Link to="/admin/reportes/ordenes" role="menuitem" onClick={cerrarMenu}>Órdenes</Link>
                 <Link to="/admin/reportes/productos-mas-vendidos" role="menuitem" onClick={cerrarMenu}>Productos más vendidos</Link>
                 <Link to="/admin/reportes/stock-bajo" role="menuitem" onClick={cerrarMenu}>Productos con stock bajo</Link>
@@ -227,6 +228,10 @@ export default function AdminNavbar({
     </header>
   );
 }
+
+
+
+
 
 
 

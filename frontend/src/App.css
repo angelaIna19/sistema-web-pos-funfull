@@ -4973,3 +4973,406 @@ body:has(.pos-sale-topbar) .admin-page.sales-page {
   min-height: 32px !important;
   font-size: 18px !important;
 }
+
+/* Reporte de ventas por caja */
+.cash-report-select select {
+  min-width: 320px;
+}
+
+.cash-box-report-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 220px));
+  justify-content: flex-start;
+}
+
+.cash-box-report-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.cash-box-report-details span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 13px;
+}
+
+.cash-box-sales-table .status-pill {
+  min-width: 92px;
+  justify-content: center;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  .admin-topbar,
+  .no-print,
+  .admin-header,
+  .admin-feedback {
+    display: none !important;
+  }
+
+  body,
+  #root,
+  .admin-page,
+  .reports-page,
+  .reports-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .printable-report {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .report-print-title {
+    margin-bottom: 12px;
+    border-bottom: 1px solid #111;
+  }
+
+  .report-print-title h2,
+  .report-print-title p {
+    margin: 0 0 6px;
+  }
+
+  .inventory-summary-card,
+  .cash-box-report-details span,
+  .admin-table th,
+  .admin-table td {
+    border-color: #bbb !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .admin-table-wrap {
+    overflow: visible !important;
+  }
+}
+
+/* Compact cash-box report cards */
+.cash-box-report-grid {
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cash-box-report-grid .inventory-summary-card {
+  min-height: 78px;
+  padding: 12px 14px;
+  border-radius: 6px;
+}
+
+.cash-box-report-grid .inventory-summary-card span {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.cash-box-report-grid .inventory-summary-card strong {
+  margin-top: 10px;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.cash-box-report-grid .inventory-summary-card:nth-child(3) strong {
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.cash-box-report-details {
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.cash-box-report-details span {
+  min-height: 24px;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+
+/* Document-style print for cash-box sales report */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 11px !important;
+  }
+
+  .screen-only,
+  .reports-panel-heading,
+  .cash-box-report-grid,
+  .cash-box-report-details {
+    display: none !important;
+  }
+
+  .report-print-document {
+    display: block !important;
+    margin-bottom: 12px;
+  }
+
+  .report-print-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #111;
+  }
+
+  .report-print-header h2 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.1;
+  }
+
+  .report-print-header p,
+  .report-print-header span {
+    margin: 4px 0 0;
+    color: #333;
+    font-size: 11px;
+  }
+
+  .report-print-header strong {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+  }
+
+  .report-print-info-grid,
+  .report-print-totals {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 30px;
+    row-gap: 5px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #111;
+  }
+
+  .report-print-totals {
+    margin-top: 8px;
+  }
+
+  .report-print-info-grid div,
+  .report-print-totals div {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    align-items: baseline;
+    min-height: 18px;
+    padding: 0;
+  }
+
+  .report-print-info-grid span,
+  .report-print-totals span {
+    color: #333;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .report-print-info-grid strong,
+  .report-print-totals strong {
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .reports-table-wrap {
+    margin-top: 12px !important;
+  }
+
+  .cash-box-sales-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 10px !important;
+  }
+
+  .cash-box-sales-table th,
+  .cash-box-sales-table td {
+    padding: 6px 7px !important;
+    border: 1px solid #111 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  .cash-box-sales-table th {
+    background: #f1f1f1 !important;
+    font-size: 9px !important;
+    text-transform: uppercase;
+  }
+
+  .cash-box-sales-table th:nth-child(7),
+  .cash-box-sales-table td:nth-child(7),
+  .cash-box-sales-table .sale-cancelled-row {
+    display: none !important;
+  }
+
+  .cash-box-sales-table .status-pill {
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #000 !important;
+  }
+
+  .sale-cancelled-row {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
+
+
+
+/* Compact cash current card */
+.caja-page .caja-layout-single {
+  width: min(920px, calc(100vw - 48px));
+  margin: 0 0 0 62px;
+}
+
+.caja-page .caja-current-panel {
+  padding: 14px 16px;
+}
+
+.caja-page .cash-dashboard-card {
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 10px 24px;
+}
+
+.caja-page .cash-dashboard-title {
+  padding-bottom: 9px;
+}
+
+.caja-page .cash-dashboard-title h3 {
+  font-size: 20px;
+}
+
+.caja-page .cash-dashboard-title span {
+  min-height: 22px;
+  padding: 0 9px;
+  font-size: 11px;
+}
+
+.caja-page .cash-dashboard-summary {
+  grid-template-columns: repeat(2, minmax(210px, 1fr));
+  gap: 7px 22px;
+  font-size: 14px;
+}
+
+.caja-page .cash-dashboard-summary div {
+  grid-template-columns: 112px 1fr;
+  gap: 10px;
+}
+
+.caja-page .cash-dashboard-card .admin-primary,
+.caja-page .cash-dashboard-card .danger-action {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .caja-page .caja-layout-single {
+    width: min(100% - 24px, 920px);
+    margin: 0 auto;
+  }
+
+  .caja-page .cash-dashboard-card,
+  .caja-page .cash-dashboard-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Document-style print for general sales and top-products reports */
+@media print {
+  .report-print-sales,
+  .report-print-top-products {
+    display: block !important;
+    margin-bottom: 12px;
+  }
+
+  .sales-payment-report-table,
+  .top-products-report-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 10px !important;
+  }
+
+  .sales-payment-report-table th,
+  .sales-payment-report-table td,
+  .top-products-report-table th,
+  .top-products-report-table td {
+    padding: 6px 7px !important;
+    border: 1px solid #111 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  .sales-payment-report-table th,
+  .top-products-report-table th {
+    background: #f1f1f1 !important;
+    font-size: 9px !important;
+    text-transform: uppercase;
+  }
+
+  .top-products-report-table th:nth-child(2),
+  .top-products-report-table td:nth-child(2),
+  .top-products-report-table th:nth-child(5),
+  .top-products-report-table td:nth-child(5) {
+    display: none !important;
+  }
+}
+
+/* More compact cards in cash-box sales report */
+.reports-page .cash-box-report-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 180px));
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.reports-page .cash-box-report-grid .inventory-summary-card {
+  min-height: 58px;
+  padding: 9px 11px;
+  border-radius: 6px;
+}
+
+.reports-page .cash-box-report-grid .inventory-summary-card span {
+  font-size: 11px;
+}
+
+.reports-page .cash-box-report-grid .inventory-summary-card strong,
+.reports-page .cash-box-report-grid .inventory-summary-card:nth-child(3) strong {
+  margin-top: 7px;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.reports-page .cash-box-report-details {
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.reports-page .cash-box-report-details span {
+  min-height: 22px;
+  padding: 2px 7px;
+  font-size: 11px;
+}

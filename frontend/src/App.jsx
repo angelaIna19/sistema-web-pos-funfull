@@ -105,6 +105,14 @@ function AppLayout() {
           }
         />
         <Route
+          path="/admin/reportes/ventas-por-caja"
+          element={
+            <RutaProtegida>
+              <ReportesAdmin modo="ventas-por-caja" />
+            </RutaProtegida>
+          }
+        />
+        <Route
           path="/admin/reportes/ordenes"
           element={
             <RutaProtegida>
@@ -157,6 +165,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 
 

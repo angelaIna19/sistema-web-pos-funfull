@@ -185,6 +185,14 @@ export async function obtenerReporteVentas() {
   return respuesta.data;
 }
 
+export async function obtenerReporteVentasPorCaja(cajaId) {
+  const respuesta = await axios.get(`${API_URL}/admin/reportes/ventas-por-caja`, {
+    headers: getAuthHeaders(),
+    params: { cajaId },
+  });
+  return respuesta.data;
+}
+
 
 export async function obtenerReporteOrdenes(periodo = "mes") {
   const respuesta = await axios.get(`${API_URL}/admin/reportes/ordenes`, {
@@ -206,4 +214,5 @@ export async function obtenerReporteStockBajo() {
   });
   return respuesta.data;
 }
+
 
