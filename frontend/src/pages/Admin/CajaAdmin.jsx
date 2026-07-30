@@ -175,7 +175,17 @@ export default function CajaAdmin({ modo = "actual" }) {
 
   return (
     <>
-      <AdminNavbar usuario={usuario} showToolbar={false} />
+      <AdminNavbar
+        usuario={usuario}
+        showToolbar
+        forceToolbar
+        sectionTitle="Caja"
+        showNewButton={false}
+        showEditDelete={false}
+        showSearch={false}
+        showToolbarActions={false}
+        showViewToggle={false}
+      />
       <main className="admin-page caja-page">
         <header className="admin-header">
           <div>
@@ -405,4 +415,5 @@ function formatDateTime(value) {
     minute: "2-digit",
   }).format(new Date(value));
 }
+
 

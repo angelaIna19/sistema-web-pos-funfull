@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function AdminNavbar({
@@ -26,11 +26,12 @@ export default function AdminNavbar({
   showSearch = true,
   showToolbarActions = true,
   showNewButton = true,
+  toolbarButtons = null,
 }) {
   const location = useLocation();
   const pathname = location.pathname;
   const [mostrarProductos, setMostrarProductos] = useState(
-    pathname.startsWith("/admin/productos") || pathname.startsWith("/admin/categorias")
+    pathname.startsWith("/admin/productos") || pathname.startsWith("/admin/categorias") || pathname.startsWith("/admin/inventario")
   );
   const [menuAbierto, setMenuAbierto] = useState(null);
 
@@ -116,10 +117,10 @@ export default function AdminNavbar({
             <button className={triggerClass("inventario")} type="button">Inventario</button>
             {menuAbierto === "inventario" && (
               <div className="admin-dropdown-menu is-open" role="menu">
-                <button type="button" role="menuitem">Entradas</button>
-                <button type="button" role="menuitem">Salidas</button>
-                <button type="button" role="menuitem">Ajustes de inventario</button>
-                <button type="button" role="menuitem">Stock bajo</button>
+                <Link to="/admin/inventario/resumen" role="menuitem" onClick={abrirSeccionProductos}>Resumen de inventario</Link>
+                <Link to="/admin/inventario/movimientos" role="menuitem" onClick={abrirSeccionProductos}>Movimientos de inventario</Link>
+                <Link to="/admin/inventario/productos" role="menuitem" onClick={abrirSeccionProductos}>Detalle de producto</Link>
+                <Link to="/admin/inventario/stock-bajo" role="menuitem" onClick={abrirSeccionProductos}>Stock bajo</Link>
               </div>
             )}
           </div>
@@ -128,9 +129,10 @@ export default function AdminNavbar({
             <button className={triggerClass("reportes")} type="button">Reportes</button>
             {menuAbierto === "reportes" && (
               <div className="admin-dropdown-menu is-open" role="menu">
-                <button type="button" role="menuitem">Reporte de ventas</button>
-                <button type="button" role="menuitem">Productos más vendidos</button>
-                <button type="button" role="menuitem">Productos con stock bajo</button>
+                <Link to="/admin/reportes/ventas" role="menuitem" onClick={cerrarMenu}>Reporte de ventas</Link>
+                <Link to="/admin/reportes/ordenes" role="menuitem" onClick={cerrarMenu}>Órdenes</Link>
+                <Link to="/admin/reportes/productos-mas-vendidos" role="menuitem" onClick={cerrarMenu}>Productos más vendidos</Link>
+                <Link to="/admin/reportes/stock-bajo" role="menuitem" onClick={cerrarMenu}>Productos con stock bajo</Link>
               </div>
             )}
           </div>
@@ -144,7 +146,19 @@ export default function AdminNavbar({
 
       {showToolbar && (mostrarProductos || forceToolbar) && (
         <div className="admin-topbar-row secondary">
-          {showNewButton && (
+          {Array.isArray(toolbarButtons) && toolbarButtons.length > 0 ? (
+            toolbarButtons.map((button) => (
+              <button
+                key={button.label}
+                className={button.className || "admin-toolbar-button"}
+                type="button"
+                onClick={button.onClick}
+                disabled={button.disabled}
+              >
+                {button.label}
+              </button>
+            ))
+          ) : showNewButton && (
             <button className="admin-new-button" type="button" onClick={abrirNuevoProducto}>{newButtonLabel}</button>
           )}
 
@@ -213,3 +227,9 @@ export default function AdminNavbar({
     </header>
   );
 }
+
+
+
+
+
+

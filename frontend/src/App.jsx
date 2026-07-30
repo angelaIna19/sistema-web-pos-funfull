@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+﻿import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import RutaProtegida from "./components/Admin/RutaProtegida";
@@ -11,6 +11,8 @@ import CategoriasAdmin from "./pages/Admin/CategoriasAdmin";
 import NuevaVentaAdmin from "./pages/Admin/NuevaVentaAdmin";
 import VentasHistorialAdmin from "./pages/Admin/VentasHistorialAdmin";
 import CajaAdmin from "./pages/Admin/CajaAdmin";
+import InventarioAdmin from "./pages/Admin/InventarioAdmin";
+import ReportesAdmin from "./pages/Admin/ReportesAdmin";
 import "./App.css";
 
 function AppLayout() {
@@ -57,6 +59,75 @@ function AppLayout() {
             </RutaProtegida>
           }
         />
+        <Route path="/admin/inventario" element={<Navigate to="/admin/inventario/resumen" replace />} />
+        <Route path="/admin/inventario/entradas" element={<Navigate to="/admin/inventario/movimientos" replace />} />
+        <Route path="/admin/inventario/salidas" element={<Navigate to="/admin/inventario/movimientos" replace />} />
+        <Route path="/admin/inventario/ajustes" element={<Navigate to="/admin/inventario/movimientos" replace />} />
+        <Route
+          path="/admin/inventario/resumen"
+          element={
+            <RutaProtegida>
+              <InventarioAdmin modo="resumen" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/inventario/movimientos"
+          element={
+            <RutaProtegida>
+              <InventarioAdmin modo="movimientos" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/inventario/productos"
+          element={
+            <RutaProtegida>
+              <InventarioAdmin modo="detalle-producto" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/inventario/stock-bajo"
+          element={
+            <RutaProtegida>
+              <InventarioAdmin modo="stock-bajo" />
+            </RutaProtegida>
+          }
+        />
+        <Route path="/admin/reportes" element={<Navigate to="/admin/reportes/ventas" replace />} />
+        <Route
+          path="/admin/reportes/ventas"
+          element={
+            <RutaProtegida>
+              <ReportesAdmin modo="ventas" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/reportes/ordenes"
+          element={
+            <RutaProtegida>
+              <ReportesAdmin modo="ordenes" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/reportes/productos-mas-vendidos"
+          element={
+            <RutaProtegida>
+              <ReportesAdmin modo="productos-mas-vendidos" />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/admin/reportes/stock-bajo"
+          element={
+            <RutaProtegida>
+              <ReportesAdmin modo="stock-bajo" />
+            </RutaProtegida>
+          }
+        />
         <Route
           path="/admin/ventas/historial"
           element={
@@ -86,3 +157,8 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+
+
+
+

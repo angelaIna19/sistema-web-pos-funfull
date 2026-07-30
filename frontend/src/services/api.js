@@ -130,3 +130,80 @@ export async function anularVenta(id, datos) {
   });
   return respuesta.data;
 }
+export async function obtenerResumenInventario() {
+  const respuesta = await axios.get(`${API_URL}/admin/inventario/resumen`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function obtenerMovimientosInventario() {
+  const respuesta = await axios.get(`${API_URL}/admin/inventario/movimientos`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function obtenerStockBajo() {
+  const respuesta = await axios.get(`${API_URL}/admin/inventario/stock-bajo`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function obtenerDetalleProductoInventario(id) {
+  const respuesta = await axios.get(`${API_URL}/admin/inventario/productos/${id}/detalle`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function registrarEntradaInventario(datos) {
+  const respuesta = await axios.post(`${API_URL}/admin/inventario/entradas`, datos, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function registrarSalidaInventario(datos) {
+  const respuesta = await axios.post(`${API_URL}/admin/inventario/salidas`, datos, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function registrarAjusteInventario(datos) {
+  const respuesta = await axios.post(`${API_URL}/admin/inventario/ajustes`, datos, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+export async function obtenerReporteVentas() {
+  const respuesta = await axios.get(`${API_URL}/admin/reportes/ventas`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+
+export async function obtenerReporteOrdenes(periodo = "mes") {
+  const respuesta = await axios.get(`${API_URL}/admin/reportes/ordenes`, {
+    headers: getAuthHeaders(),
+    params: { periodo },
+  });
+  return respuesta.data;
+}
+export async function obtenerProductosMasVendidos() {
+  const respuesta = await axios.get(`${API_URL}/admin/reportes/productos-mas-vendidos`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function obtenerReporteStockBajo() {
+  const respuesta = await axios.get(`${API_URL}/admin/reportes/stock-bajo`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+

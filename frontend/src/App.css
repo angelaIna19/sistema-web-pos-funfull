@@ -1,4 +1,4 @@
-body {
+﻿body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   color: #202124;
@@ -3109,18 +3109,18 @@ footer {
 .pos-keypad .tone-danger {
   font-size: 13px;
 }
-/* Full viewport POS correction and purchase quantity badges */
+/* Full-width POS without horizontal drift */
 .pos-sale-topbar {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .admin-page.sales-page {
-  width: 100vw;
+  width: 100%;
   max-width: none;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  margin-left: 0;
+  margin-right: 0;
 }
 /* POS bar spacing and visible selected quantity */
 .pos-sale-topbar {
@@ -4372,4 +4372,604 @@ footer {
   color: #9ca3af !important;
   opacity: 1 !important;
   cursor: not-allowed !important;
+}
+/* Inventory module */
+.inventory-page .inventory-panel {
+  width: min(1500px, calc(100vw - 32px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.inventory-table td.inventory-positive {
+  color: #087f23;
+  font-weight: 900;
+}
+
+.inventory-table td.inventory-negative {
+  color: #c8102e;
+  font-weight: 900;
+}
+
+.inventory-form select,
+.inventory-form textarea {
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid #d5d9df;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.inventory-form textarea {
+  min-height: 74px;
+  resize: vertical;
+}
+
+/* Inventory summary and unified movements */
+.inventory-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(130px, 180px));
+  gap: 8px;
+  justify-content: start;
+}
+
+.inventory-summary-card {
+  min-height: 68px;
+  padding: 10px 12px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.inventory-summary-card span {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.inventory-summary-card strong {
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.inventory-summary-card.warning {
+  background: #fffbeb;
+  border-color: #facc15;
+}
+
+.inventory-summary-card.danger {
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+
+.inventory-type-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.inventory-type-pill.salida {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.inventory-type-pill.ajuste {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+@media (max-width: 1100px) {
+  .inventory-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .inventory-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Inventory product detail */
+.selectable-table tbody tr {
+  cursor: pointer;
+}
+
+.selectable-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.inventory-detail-modal {
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100vh - 56px);
+  overflow: auto;
+}
+
+.inventory-detail-loading {
+  margin: 14px 18px;
+}
+
+.inventory-detail-content {
+  padding: 14px 18px 18px;
+}
+
+.inventory-detail-main {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 16px;
+  align-items: stretch;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.inventory-detail-image {
+  min-height: 150px;
+  border: 1px solid #dbe2ea;
+  border-radius: 6px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.inventory-detail-image img {
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+}
+
+.inventory-detail-info h4,
+.inventory-detail-history h4 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.inventory-detail-info dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 18px;
+  margin: 0;
+}
+
+.inventory-detail-info div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.inventory-detail-info dt {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.inventory-detail-info dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.inventory-detail-history {
+  margin-top: 14px;
+}
+
+@media (max-width: 720px) {
+  .inventory-detail-main,
+  .inventory-detail-info dl {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-detail-info div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+
+/* Reports */
+
+.reports-page .admin-header,
+.reports-page .reports-panel {
+  width: min(1500px, calc(100vw - 48px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reports-page .admin-header {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.reports-summary-grid {
+  margin-bottom: 14px;
+}
+
+.reports-table-wrap {
+  margin-top: 14px;
+}
+
+.inventory-summary-card.success {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+}
+
+.reports-table td,
+.reports-table th {
+  white-space: nowrap;
+}
+
+.reports-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.reports-panel-heading h3 {
+  margin: 0;
+}
+
+.reports-period-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.reports-period-select select {
+  min-height: 32px;
+  padding: 5px 30px 5px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.orders-report-table td,
+.orders-report-table th {
+  text-align: left;
+}
+
+@media (max-width: 720px) {
+  .reports-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+.reports-page .admin-table-wrap {
+  overflow-x: visible;
+}
+
+@media (max-width: 900px) {
+  .reports-page .admin-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+/* Admin layout overflow guard and Caja toolbar alignment */
+body:has(.admin-topbar) {
+  overflow-x: hidden;
+}
+
+.admin-topbar.clean-admin-topbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.clean-admin-topbar .admin-topbar-row {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.clean-admin-topbar .admin-app-title,
+.clean-admin-topbar .admin-module-tabs,
+.clean-admin-topbar .admin-topbar-fill,
+.clean-admin-topbar .admin-search-box {
+  min-width: 0;
+}
+
+.clean-admin-topbar .admin-topbar-fill {
+  flex: 1 1 auto;
+  border: 0;
+  background: transparent;
+}
+
+.clean-admin-topbar .admin-topbar-row.secondary .admin-search-box {
+  flex: 0 1 730px;
+  max-width: min(730px, 48vw);
+}
+
+.admin-page {
+  max-width: 100%;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+.admin-page .admin-header,
+.compact-products-page .products-only-list,
+.ventas-history-page .ventas-history-panel,
+.inventory-page .inventory-panel,
+.reports-page .reports-panel,
+.caja-page .caja-layout-history,
+.caja-page .admin-feedback {
+  width: min(1500px, calc(100% - 32px)) !important;
+  max-width: 1500px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
+}
+
+.reports-page .reports-panel,
+.inventory-page .inventory-panel,
+.ventas-history-page .ventas-history-panel,
+.compact-products-page .products-only-list,
+.caja-page .caja-history-panel {
+  overflow-x: clip;
+}
+
+.admin-table-wrap {
+  max-width: 100%;
+}
+
+.caja-page .caja-layout-single {
+  width: min(760px, calc(100% - 32px)) !important;
+  max-width: 760px;
+  margin-left: 16px !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1540px) {
+  .caja-page .caja-layout-single {
+    margin-left: calc((100% - 1500px) / 2) !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .clean-admin-topbar .admin-topbar-row.primary {
+    gap: 10px;
+  }
+
+  .clean-admin-topbar .admin-app-title {
+    min-width: 0;
+  }
+
+  .clean-admin-topbar .admin-topbar-row.secondary .admin-search-box {
+    max-width: 100%;
+  }
+}
+
+/* Final admin navbar correction: no horizontal page drift, no wrapped toolbar */
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.admin-topbar.clean-admin-topbar {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow: visible;
+}
+
+.clean-admin-topbar .admin-topbar-row.primary,
+.clean-admin-topbar .admin-topbar-row.secondary {
+  flex-wrap: nowrap !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.clean-admin-topbar .admin-topbar-row.secondary {
+  min-height: 50px;
+  padding: 7px 16px;
+  gap: 10px;
+}
+
+.clean-admin-topbar .admin-section-title {
+  flex: 0 0 auto;
+  min-width: 150px;
+  max-width: 240px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.clean-admin-topbar .admin-new-button,
+.clean-admin-topbar .admin-toolbar-button {
+  flex: 0 0 auto;
+}
+
+.clean-admin-topbar .admin-topbar-row.secondary .admin-search-box {
+  flex: 1 1 520px;
+  width: auto;
+  min-width: 260px;
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.clean-admin-topbar .admin-toolbar-actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.clean-admin-topbar .admin-toolbar-actions span {
+  display: inline-flex;
+  align-items: center;
+  min-width: max-content;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.clean-admin-topbar .admin-toolbar-actions button {
+  flex: 0 0 auto;
+}
+
+.admin-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+
+/* Restore POS screen after admin overflow correction */
+.pos-sale-topbar {
+  box-sizing: border-box;
+}
+
+.admin-page.sales-page {
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.sales-page .pos-sale-screen {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sales-page .pos-ticket-panel,
+.sales-page .pos-products-panel {
+  min-width: 0;
+}
+
+.sales-page .pos-products-panel {
+  overflow-x: hidden;
+}
+
+.sales-page .pos-products-grid {
+  max-width: 100%;
+}
+
+/* Full screen admin navbar width */
+.admin-topbar.clean-admin-topbar {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Admin workspace must use the full browser width */
+body:has(.admin-topbar) #root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-inline: 0;
+}
+
+body:has(.admin-topbar) .admin-topbar.clean-admin-topbar {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+body:has(.admin-topbar) .clean-admin-topbar .admin-topbar-row.primary,
+body:has(.admin-topbar) .clean-admin-topbar .admin-topbar-row.secondary {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* POS also needs full workspace width when admin navbar is not mounted */
+body:has(.pos-sale-topbar) #root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-inline: 0;
+}
+
+body:has(.pos-sale-topbar) .pos-sale-topbar,
+body:has(.pos-sale-topbar) .admin-page.sales-page {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* More compact secondary admin toolbar */
+.clean-admin-topbar .admin-topbar-row.secondary {
+  min-height: 40px !important;
+  padding: 4px 14px !important;
+  gap: 8px !important;
+}
+
+.clean-admin-topbar .admin-section-title {
+  font-size: 16px !important;
+  min-width: 130px !important;
+}
+
+.clean-admin-topbar .admin-new-button,
+.clean-admin-topbar .admin-toolbar-button {
+  min-height: 30px !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+}
+
+.clean-admin-topbar .admin-topbar-row.secondary .admin-search-box {
+  min-height: 32px !important;
+  max-width: 760px !important;
+  font-size: 14px !important;
+}
+
+.clean-admin-topbar .admin-filter-chip {
+  min-height: 24px !important;
+  padding: 0 9px !important;
+  font-size: 14px !important;
+}
+
+.clean-admin-topbar .admin-filter-close {
+  font-size: 18px !important;
+}
+
+.clean-admin-topbar .admin-toolbar-actions {
+  gap: 6px !important;
+  font-size: 14px !important;
+}
+
+.clean-admin-topbar .admin-toolbar-actions button {
+  min-width: 34px !important;
+  min-height: 32px !important;
+  font-size: 18px !important;
 }
