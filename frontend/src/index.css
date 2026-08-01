@@ -1,8 +1,8 @@
 ﻿:root {
-  font: 18px/145% system-ui, "Segoe UI", Roboto, sans-serif;
+  font: 16px/150% "Poppins", system-ui, sans-serif;
   letter-spacing: 0;
   color: #333;
-  background: #fff;
+  background: #f5f5f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
