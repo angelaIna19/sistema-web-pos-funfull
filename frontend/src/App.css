@@ -1530,7 +1530,7 @@ footer {
 
 .clean-admin-topbar .admin-dropdown-menu {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 2px);
   left: 0;
   min-width: 160px;
   padding: 6px;
@@ -6867,4 +6867,267 @@ body:has(.catalogo-page) {
   .catalog-grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+.admin-session-area {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.admin-user-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-logout-button {
+  height: 30px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 6px;
+  padding: 0 10px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-logout-button:hover:not(:disabled) {
+  background: rgba(51, 65, 85, 0.95);
+}
+
+.admin-logout-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.admin-user-menu-button {
+  padding: 0;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-user-menu-button:hover,
+.admin-user-menu-button[aria-expanded="true"] {
+  background: #4777d0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+}
+
+.admin-user-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  right: 0;
+  min-width: 190px;
+  padding: 6px;
+  border: 1px solid #3f4858;
+  border-radius: 6px;
+  background: #202532;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+  z-index: 220;
+}
+
+.admin-user-dropdown button {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 10px;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-user-dropdown button:hover:not(:disabled) {
+  background: #343a49;
+}
+
+.admin-user-dropdown button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+.logout-block-modal {
+  width: min(460px, 100%);
+}
+
+.logout-block-content {
+  padding: 18px 20px;
+}
+
+.logout-block-content p {
+  margin: 0;
+  color: #243447;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.logout-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+
+.account-page {
+  max-width: 980px;
+  padding-top: 24px;
+}
+
+.account-card {
+  max-width: 760px;
+  border: 1px solid #e1e5ec;
+  border-radius: 8px;
+  padding: 20px 22px;
+  background: #fff;
+}
+
+.account-card h2 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
+
+.account-hint {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.account-form {
+  display: grid;
+  gap: 14px;
+}
+
+.account-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.account-field {
+  display: grid;
+  gap: 6px;
+  color: #111827;
+  font-weight: 800;
+}
+
+.account-field.full {
+  grid-column: 1 / -1;
+}
+
+.account-field input {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #cfd6df;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 15px;
+  background: #fff;
+}
+
+.account-field input[readonly] {
+  background: #f3f6fa;
+  color: #475569;
+}
+
+.account-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.login-help-message {
+  margin: -4px 0 10px;
+  padding: 8px 10px;
+  border: 1px solid #d9e2ee;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+@media (max-width: 700px) {
+  .account-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-field.full {
+    grid-column: auto;
+  }
+}
+
+/* Login public return link */
+.login-shell {
+  width: min(300px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.login-shell .login-card {
+  width: 100%;
+}
+
+.login-back-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 5px 8px;
+  border: 1px solid rgba(190, 143, 44, 0.28);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #3b2a12;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(25, 18, 10, 0.08);
+}
+
+.login-back-link:hover,
+.login-back-link:focus-visible {
+  color: #9a6a0a;
+  border-color: rgba(190, 143, 44, 0.5);
+  outline: none;
+}
+
+.login-logo-link {
+  display: inline-flex;
+  align-self: center;
+  border-radius: 8px;
+}
+
+.login-logo-link:focus-visible {
+  outline: 2px solid #c89a2c;
+  outline-offset: 4px;
+}
+
+/* Center clickable login logo */
+.login-card .login-logo-link {
+  display: flex;
+  width: max-content;
+  margin: 0 auto 6px;
+  justify-content: center;
+}
+
+.login-card .login-logo-link .login-logo {
+  display: block;
+  margin: 0;
 }

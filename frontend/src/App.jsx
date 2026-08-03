@@ -13,6 +13,7 @@ import VentasHistorialAdmin from "./pages/Admin/VentasHistorialAdmin";
 import CajaAdmin from "./pages/Admin/CajaAdmin";
 import InventarioAdmin from "./pages/Admin/InventarioAdmin";
 import ReportesAdmin from "./pages/Admin/ReportesAdmin";
+import CuentaAdmin from "./pages/Admin/CuentaAdmin";
 import "./App.css";
 
 function AppLayout() {
@@ -27,6 +28,14 @@ function AppLayout() {
         <Route path="/catalogo" element={<Catalogo />} />
         <Route path="/producto/:id" element={<DetalleProducto />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin/cuenta"
+          element={
+            <RutaProtegida>
+              <CuentaAdmin />
+            </RutaProtegida>
+          }
+        />
         <Route
           path="/admin/productos"
           element={
@@ -165,6 +174,11 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+
+
+
+
 
 
 

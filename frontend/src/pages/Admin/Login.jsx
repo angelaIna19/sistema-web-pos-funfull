@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoFunFull from "../../assets/logo-funfull.png";
 import { iniciarSesion } from "../../services/api";
 
@@ -10,6 +10,7 @@ export default function Login() {
   const [recordarme, setRecordarme] = useState(false);
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [error, setError] = useState("");
+  const [mensajeRecuperacion, setMensajeRecuperacion] = useState("");
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function Login() {
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+    setMensajeRecuperacion("");
     setCargando(true);
 
     try {
@@ -39,10 +41,24 @@ export default function Login() {
     }
   }
 
+  function mostrarAyudaRecuperacion(event) {
+    event.preventDefault();
+    setError("");
+    setMensajeRecuperacion("Solicita al propietario restablecer la contraseña desde el servidor.");
+  }
+
   return (
     <main className="login-page">
-      <section className="login-card">
-        <img className="login-logo" src={logoFunFull} alt="Licorería Fun Full" />
+      <div className="login-shell">
+        <Link className="login-back-link" to="/">
+          <span aria-hidden="true">&larr;</span>
+          Volver al inicio
+        </Link>
+
+        <section className="login-card">
+          <Link className="login-logo-link" to="/" aria-label="Volver al inicio">
+            <img className="login-logo" src={logoFunFull} alt="Licorería Fun Full" />
+          </Link>
         <h2>Acceso Administrador</h2>
         <p className="login-subtitle">Ingresa tus credenciales para continuar</p>
 
@@ -93,11 +109,12 @@ export default function Login() {
               />
               <span>Recordarme</span>
             </label>
-            <a href="#recuperar" onClick={(event) => event.preventDefault()}>
+            <a href="#recuperar" onClick={mostrarAyudaRecuperacion}>
               ¿Olvidaste tu contraseña?
             </a>
           </div>
 
+          {mensajeRecuperacion && <p className="login-help-message">{mensajeRecuperacion}</p>}
           {error && <p className="error-message">{error}</p>}
 
           <button className="login-submit" type="submit" disabled={cargando}>
@@ -115,7 +132,9 @@ export default function Login() {
             <p>Si no tienes permisos, contacta al propietario del sistema.</p>
           </div>
         </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
+

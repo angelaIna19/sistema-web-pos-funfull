@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { cerrarSesionAdmin } from "../../services/api";
 
 export default function AdminNavbar({
   usuario = "admin",
@@ -29,11 +30,16 @@ export default function AdminNavbar({
   toolbarButtons = null,
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const pathname = location.pathname;
   const [mostrarProductos, setMostrarProductos] = useState(
     pathname.startsWith("/admin/productos") || pathname.startsWith("/admin/categorias") || pathname.startsWith("/admin/inventario")
   );
   const [menuAbierto, setMenuAbierto] = useState(null);
+  const [menuUsuarioAbierto, setMenuUsuarioAbierto] = useState(false);
+  const [cerrandoSesion, setCerrandoSesion] = useState(false);
+  const [mostrarBloqueoSesion, setMostrarBloqueoSesion] = useState(false);
+  const [mensajeBloqueoSesion, setMensajeBloqueoSesion] = useState("");
 
   const moduloActivo = pathname.startsWith("/admin/ventas")
     ? "ventas"
@@ -49,6 +55,7 @@ export default function AdminNavbar({
 
   function cerrarMenu() {
     setMenuAbierto(null);
+    setMenuUsuarioAbierto(false);
   }
 
   function abrirSeccionProductos() {
@@ -70,8 +77,53 @@ export default function AdminNavbar({
     return moduloActivo === modulo ? "admin-menu-trigger is-active" : "admin-menu-trigger";
   }
 
+
+  function irAMiCuenta() {
+    setMenuUsuarioAbierto(false);
+    setMenuAbierto(null);
+    navigate("/admin/cuenta", {
+      state: { from: `${location.pathname}${location.search}` },
+    });
+  }
+  async function cerrarSesion() {
+    setMenuUsuarioAbierto(false);
+    setCerrandoSesion(true);
+    setMensajeBloqueoSesion("");
+
+    try {
+      await cerrarSesionAdmin();
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUsuario");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      if (error.response?.status === 409) {
+        setMensajeBloqueoSesion(error.response.data?.mensaje || "No puedes cerrar sesión mientras exista una caja registradora abierta. Cierra la caja primero.");
+        setMostrarBloqueoSesion(true);
+        return;
+      }
+
+      if (error.response?.status === 401) {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminUsuario");
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      setMensajeBloqueoSesion(error.response?.data?.mensaje || "No se pudo cerrar sesión. Inténtalo nuevamente.");
+      setMostrarBloqueoSesion(true);
+    } finally {
+      setCerrandoSesion(false);
+    }
+  }
+
+  function irACajaActual() {
+    setMostrarBloqueoSesion(false);
+    navigate("/admin/caja");
+  }
+
   return (
-    <header className="admin-topbar clean-admin-topbar" onMouseLeave={cerrarMenu}>
+    <>
+      <header className="admin-topbar clean-admin-topbar" onMouseLeave={cerrarMenu}>
       <div className="admin-topbar-row primary">
         <div className="admin-app-title">
           <span className="admin-app-icon" aria-hidden="true">POS</span>
@@ -141,8 +193,32 @@ export default function AdminNavbar({
 
         <div className="admin-topbar-fill" />
 
-        <span className="admin-user-name">{usuario}</span>
-        <span className="admin-user-badge" aria-hidden="true">C</span>
+        <div className="admin-session-area">
+          <span className="admin-user-name">{usuario}</span>
+          <div className="admin-user-menu" onMouseLeave={() => setMenuUsuarioAbierto(false)}>
+            <button
+              className="admin-user-badge admin-user-menu-button"
+              type="button"
+              aria-label="Abrir menú de usuario"
+              aria-haspopup="menu"
+              aria-expanded={menuUsuarioAbierto}
+              onClick={() => {
+                setMenuAbierto(null);
+                setMenuUsuarioAbierto((abierto) => !abierto);
+              }}
+            >
+              C
+            </button>
+            {menuUsuarioAbierto && (
+              <div className="admin-user-dropdown" role="menu">
+                <button type="button" role="menuitem" onClick={irAMiCuenta}>Mi cuenta</button>
+                <button type="button" role="menuitem" onClick={cerrarSesion} disabled={cerrandoSesion}>
+                  {cerrandoSesion ? "Cerrando..." : "Cerrar sesión"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {showToolbar && (mostrarProductos || forceToolbar) && (
@@ -225,9 +301,31 @@ export default function AdminNavbar({
           )}
         </div>
       )}
-    </header>
+      </header>
+
+      {mostrarBloqueoSesion && (
+        <div className="product-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="logout-block-title">
+          <div className="product-modal logout-block-modal">
+            <div className="product-modal-header">
+              <h3 id="logout-block-title">No se puede cerrar sesión</h3>
+              <button type="button" onClick={() => setMostrarBloqueoSesion(false)} aria-label="Cerrar">X</button>
+            </div>
+            <div className="logout-block-content">
+              <p>{mensajeBloqueoSesion}</p>
+            </div>
+            <div className="logout-modal-actions">
+              <button className="admin-new-button" type="button" onClick={irACajaActual}>Ir a Caja actual</button>
+              <button className="admin-toolbar-button" type="button" onClick={() => setMostrarBloqueoSesion(false)}>Entendido</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
+
+
+
 
 
 

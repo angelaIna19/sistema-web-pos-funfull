@@ -21,7 +21,27 @@ export async function iniciarSesion(usuario, password) {
   const respuesta = await axios.post(`${API_URL}/auth/login`, { usuario, password });
   return respuesta.data;
 }
+export async function cerrarSesionAdmin() {
+  const respuesta = await axios.post(`${API_URL}/auth/logout`, {}, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
 
+
+export async function obtenerMiCuenta() {
+  const respuesta = await axios.get(`${API_URL}/admin/usuarios/me`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function actualizarMisCredenciales(datos) {
+  const respuesta = await axios.put(`${API_URL}/admin/usuarios/me/credenciales`, datos, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
 export async function crearProducto(producto) {
   const respuesta = await axios.post(`${API_URL}/admin/productos`, producto, {
     headers: getAuthHeaders(),
@@ -214,5 +234,6 @@ export async function obtenerReporteStockBajo() {
   });
   return respuesta.data;
 }
+
 
 
