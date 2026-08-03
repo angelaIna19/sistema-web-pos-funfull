@@ -8,6 +8,7 @@ const cashRegisterRoutes = require("./modules/cashRegister/cashRegister.routes")
 const saleRoutes = require("./modules/sales/sale.routes");
 const inventoryRoutes = require("./modules/inventory/inventory.routes");
 const reportRoutes = require("./modules/reports/report.routes");
+const userRoutes = require("./modules/users/user.routes");
 
 const app = express();
 
@@ -34,6 +35,9 @@ app.use("/api", cashRegisterRoutes);
 app.use("/api", saleRoutes);
 app.use("/api", inventoryRoutes);
 app.use("/api", reportRoutes);
+app.use("/api", userRoutes);
 
 module.exports = app;
+
+
 

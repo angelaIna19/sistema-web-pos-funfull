@@ -11,10 +11,16 @@ async function login(req, res) {
   }
 }
 
-function logout(req, res) {
-  const token = req.headers.authorization.slice(7);
-  authService.logout(token);
-  res.json({ mensaje: "Sesión cerrada." });
+async function logout(req, res) {
+  try {
+    const token = req.headers.authorization?.slice(7) || "";
+    await authService.logout(token);
+    res.json({ mensaje: "Sesión cerrada." });
+  } catch (error) {
+    res.status(error.status || 503).json({
+      mensaje: error.status ? error.message : "No se pudo cerrar sesión.",
+    });
+  }
 }
 
 module.exports = { login, logout };

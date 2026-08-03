@@ -1,6 +1,7 @@
 ﻿const crypto = require("crypto");
 const { query } = require("../../config/db");
 const { verifyPassword } = require("../../utils/password");
+const cashRegisterService = require("../cashRegister/cashRegister.service");
 
 const sessions = new Map();
 
@@ -30,7 +31,15 @@ async function login(usuario, password) {
   return { token, ...session };
 }
 
-function logout(token) {
+async function logout(token) {
+  const cajaAbierta = await cashRegisterService.getOpenCashRegister();
+
+  if (cajaAbierta) {
+    const error = new Error("No puedes cerrar sesión mientras exista una caja registradora abierta. Cierra la caja primero.");
+    error.status = 409;
+    throw error;
+  }
+
   sessions.delete(token);
 }
 
@@ -39,3 +48,4 @@ function getSession(token) {
 }
 
 module.exports = { login, logout, getSession };
+
