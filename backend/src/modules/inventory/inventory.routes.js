@@ -6,6 +6,7 @@ const router = Router();
 
 router.get("/admin/inventario/resumen", requireAuth, inventoryController.summary);
 router.get("/admin/inventario/movimientos", requireAuth, inventoryController.movements);
+router.get("/admin/inventario/movimientos/archivados", requireAuth, inventoryController.archivedMovements);
 router.get("/admin/inventario/stock-bajo", requireAuth, inventoryController.lowStock);
 router.get("/admin/inventario/productos/:id/detalle", requireAuth, inventoryController.productDetail);
 router.post("/admin/inventario/entradas", requireAuth, inventoryController.entry);

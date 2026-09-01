@@ -11,7 +11,7 @@ async function cashBoxSales(req, res) {
 
 async function sales(req, res) {
   try {
-    const reporte = await reportService.salesReport();
+    const reporte = await reportService.salesReport(req.query.periodo);
     res.json(reporte);
   } catch (error) {
     res.status(503).json({ mensaje: "No se pudo cargar el reporte de ventas." });

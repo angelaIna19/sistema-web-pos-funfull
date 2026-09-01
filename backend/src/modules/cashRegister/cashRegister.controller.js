@@ -11,10 +11,19 @@ async function current(req, res) {
 
 async function history(req, res) {
   try {
-    const cajas = await cashRegisterService.listCashRegisters(req.admin);
+    const cajas = await cashRegisterService.listCashRegisters();
     res.json(cajas);
   } catch (error) {
     res.status(503).json({ mensaje: "No se pudo consultar el historial de cajas." });
+  }
+}
+
+async function archivedHistory(req, res) {
+  try {
+    const cajas = await cashRegisterService.listCashRegisters(true);
+    res.json(cajas);
+  } catch (error) {
+    res.status(503).json({ mensaje: "No se pudo consultar el historial archivado de cajas." });
   }
 }
 
@@ -51,4 +60,4 @@ async function movement(req, res) {
   }
 }
 
-module.exports = { current, history, open, close, movement };
+module.exports = { archivedHistory, current, history, open, close, movement };

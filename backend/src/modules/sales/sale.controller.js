@@ -22,6 +22,17 @@ async function list(req, res) {
   }
 }
 
+async function archived(req, res) {
+  try {
+    const ventas = await saleService.listSales(true);
+    res.json(ventas);
+  } catch (error) {
+    res.status(error.status || 503).json({
+      mensaje: error.status ? error.message : "No se pudo cargar el historial archivado de ventas.",
+    });
+  }
+}
+
 async function detail(req, res) {
   try {
     const venta = await saleService.getSaleDetail(req.params.id);
@@ -44,4 +55,4 @@ async function cancel(req, res) {
   }
 }
 
-module.exports = { cancel, create, list, detail };
+module.exports = { archived, cancel, create, list, detail };

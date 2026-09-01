@@ -52,8 +52,8 @@ async function getProductDetail(id) {
   return detalle;
 }
 
-async function listMovements() {
-  return inventoryRepository.findMovements();
+async function listMovements(archived = false) {
+  return inventoryRepository.findMovements(archived);
 }
 
 async function listLowStock() {

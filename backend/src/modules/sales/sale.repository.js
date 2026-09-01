@@ -36,12 +36,13 @@ function mapDetalle(row) {
   };
 }
 
-async function findAllSales() {
+async function findAllSales(archived = false) {
   const result = await pool.query(
     `SELECT v.*, u.usuario, c.nombre_trabajador
      FROM ventas v
      JOIN usuarios_admin u ON u.id = v.usuario_id
      JOIN cajas c ON c.id = v.caja_id
+     WHERE v.creada_en ${archived ? "<" : ">="} CURRENT_DATE - INTERVAL '6 months'
      ORDER BY v.creada_en DESC, v.id DESC`
   );
 

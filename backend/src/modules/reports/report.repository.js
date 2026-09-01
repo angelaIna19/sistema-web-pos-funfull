@@ -4,7 +4,22 @@ function mapMoney(value) {
   return Number(value || 0);
 }
 
-async function getSalesReport() {
+function getSalesPeriodCondition(periodo) {
+  const conditions = {
+    semana: "creada_en BETWEEN date_trunc('week', CURRENT_DATE) AND CURRENT_TIMESTAMP",
+    quincena: `creada_en >= CASE
+      WHEN EXTRACT(DAY FROM CURRENT_DATE) <= 15 THEN date_trunc('month', CURRENT_DATE)
+      ELSE date_trunc('month', CURRENT_DATE) + INTERVAL '15 days'
+    END AND creada_en <= CURRENT_TIMESTAMP`,
+    mes: "creada_en BETWEEN date_trunc('month', CURRENT_DATE) AND CURRENT_TIMESTAMP",
+    todo: "TRUE",
+  };
+
+  return conditions[periodo] || conditions.mes;
+}
+
+async function getSalesReport(periodo) {
+  const periodCondition = getSalesPeriodCondition(periodo);
   const summaryResult = await query(
     `SELECT
        COUNT(*) FILTER (WHERE estado = 'REGISTRADA')::int AS ventas_registradas,
@@ -12,7 +27,8 @@ async function getSalesReport() {
        COALESCE(SUM(subtotal) FILTER (WHERE estado = 'REGISTRADA'), 0)::numeric AS subtotal,
        COALESCE(SUM(impuesto) FILTER (WHERE estado = 'REGISTRADA'), 0)::numeric AS impuesto,
        COALESCE(SUM(total) FILTER (WHERE estado = 'REGISTRADA'), 0)::numeric AS total
-     FROM ventas`
+     FROM ventas
+     WHERE ${periodCondition}`
   );
 
   const methodsResult = await query(
@@ -23,6 +39,7 @@ async function getSalesReport() {
             COALESCE(SUM(total), 0)::numeric AS total
      FROM ventas
      WHERE estado = 'REGISTRADA'
+       AND ${periodCondition}
      GROUP BY metodo_pago
      ORDER BY metodo_pago ASC`
   );
@@ -154,6 +171,8 @@ async function getCashBoxSalesReport(cajaId) {
             COALESCE(vs.total_transferencia, 0) AS total_transferencia,
             COALESCE(vs.ventas_registradas, 0)::int AS ventas_registradas,
             COALESCE(vs.ventas_anuladas, 0)::int AS ventas_anuladas,
+            COALESCE(ps.unidades_vendidas, 0)::int AS unidades_vendidas,
+            COALESCE(ps.total_productos, 0) AS total_productos,
             COALESCE(ms.ingresos_manuales, 0) AS ingresos_manuales,
             COALESCE(ms.egresos_manuales, 0) AS egresos_manuales,
             CASE
@@ -177,6 +196,15 @@ async function getCashBoxSalesReport(cajaId) {
        WHERE caja_id = $1
        GROUP BY caja_id
      ) vs ON vs.caja_id = c.id
+     LEFT JOIN (
+       SELECT v.caja_id,
+              SUM(vd.cantidad)::int AS unidades_vendidas,
+              SUM(vd.subtotal) AS total_productos
+       FROM ventas v
+       JOIN venta_detalles vd ON vd.venta_id = v.id
+       WHERE v.caja_id = $1 AND v.estado = 'REGISTRADA'
+       GROUP BY v.caja_id
+     ) ps ON ps.caja_id = c.id
      LEFT JOIN (
        SELECT caja_id,
               SUM(CASE WHEN tipo = 'INGRESO' THEN monto ELSE 0 END) AS ingresos_manuales,
@@ -219,6 +247,24 @@ async function getCashBoxSalesReport(cajaId) {
     [cajaId]
   );
 
+  const productosResult = await query(
+    `SELECT p.id,
+            p.nombre,
+            SUM(vd.cantidad)::int AS cantidad_vendida,
+            CASE
+              WHEN SUM(vd.cantidad) = 0 THEN 0
+              ELSE SUM(vd.subtotal) / SUM(vd.cantidad)
+            END AS precio_unitario,
+            SUM(vd.subtotal) AS total_vendido
+     FROM ventas v
+     JOIN venta_detalles vd ON vd.venta_id = v.id
+     JOIN productos p ON p.id = vd.producto_id
+     WHERE v.caja_id = $1 AND v.estado = 'REGISTRADA'
+     GROUP BY p.id, p.nombre
+     ORDER BY p.nombre ASC`,
+    [cajaId]
+  );
+
   return {
     caja: {
       id: caja.id,
@@ -240,14 +286,23 @@ async function getCashBoxSalesReport(cajaId) {
     resumen: {
       ventasRegistradas: Number(caja.ventas_registradas || 0),
       ventasAnuladas: Number(caja.ventas_anuladas || 0),
+      unidadesVendidas: Number(caja.unidades_vendidas || 0),
       totalEfectivo: mapMoney(caja.total_efectivo),
       totalTransferencia: mapMoney(caja.total_transferencia),
       totalVendido: mapMoney(caja.vendido),
+      totalProductos: mapMoney(caja.total_productos),
     },
     metodosPago: metodosResult.rows.map((item) => ({
       metodoPago: item.metodo_pago,
       ventas: Number(item.ventas || 0),
       total: mapMoney(item.total),
+    })),
+    productos: productosResult.rows.map((producto) => ({
+      id: producto.id,
+      nombre: producto.nombre,
+      cantidadVendida: Number(producto.cantidad_vendida || 0),
+      precioUnitario: mapMoney(producto.precio_unitario),
+      totalVendido: mapMoney(producto.total_vendido),
     })),
     ventas: ventasResult.rows.map((venta) => ({
       id: venta.id,

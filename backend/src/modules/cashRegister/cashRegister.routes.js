@@ -6,6 +6,7 @@ const router = Router();
 
 router.get("/admin/caja/actual", requireAuth, cashRegisterController.current);
 router.get("/admin/cajas", requireAuth, cashRegisterController.history);
+router.get("/admin/cajas/archivadas", requireAuth, cashRegisterController.archivedHistory);
 router.post("/admin/caja/abrir", requireAuth, cashRegisterController.open);
 router.post("/admin/caja/cerrar", requireAuth, cashRegisterController.close);
 router.post("/admin/caja/movimientos", requireAuth, cashRegisterController.movement);

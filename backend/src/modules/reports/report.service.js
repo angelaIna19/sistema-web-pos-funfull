@@ -1,6 +1,7 @@
 ﻿const reportRepository = require("./report.repository");
 
 const PERIODOS_ORDENES = new Set(["dia", "semana", "quincena", "mes"]);
+const PERIODOS_VENTAS = new Set(["semana", "quincena", "mes", "todo"]);
 
 async function cashBoxSalesReport(cajaId) {
   const id = Number(cajaId);
@@ -20,8 +21,10 @@ async function cashBoxSalesReport(cajaId) {
   return reporte;
 }
 
-async function salesReport() {
-  return reportRepository.getSalesReport();
+async function salesReport(periodo = "mes") {
+  const periodoNormalizado = String(periodo || "mes").trim().toLowerCase();
+  const periodoValido = PERIODOS_VENTAS.has(periodoNormalizado) ? periodoNormalizado : "mes";
+  return reportRepository.getSalesReport(periodoValido);
 }
 
 async function ordersReport(periodo = "mes") {

@@ -35,12 +35,13 @@ function mapMovement(row) {
   };
 }
 
-async function findMovements() {
+async function findMovements(archived = false) {
   const result = await query(
     `SELECT im.*, p.codigo, p.nombre, p.categoria, p.marca, u.usuario
      FROM inventario_movimientos im
      JOIN productos p ON p.id = im.producto_id
      JOIN usuarios_admin u ON u.id = im.usuario_id
+     WHERE im.creado_en ${archived ? "<" : ">="} CURRENT_DATE - INTERVAL '6 months'
      ORDER BY im.creado_en DESC, im.id DESC`
   );
 

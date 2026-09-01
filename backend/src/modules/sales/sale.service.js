@@ -35,8 +35,8 @@ async function createSale(admin, body) {
   };
 }
 
-async function listSales() {
-  return saleRepository.findAllSales();
+async function listSales(archived = false) {
+  return saleRepository.findAllSales(archived);
 }
 
 async function getSaleDetail(id) {

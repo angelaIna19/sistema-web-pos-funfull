@@ -4,8 +4,8 @@ async function getOpenCashRegister() {
   return cashRegisterRepository.findOpen();
 }
 
-async function listCashRegisters() {
-  return cashRegisterRepository.findAll();
+async function listCashRegisters(archived = false) {
+  return cashRegisterRepository.findAll(archived);
 }
 
 async function openCashRegister(admin, body) {

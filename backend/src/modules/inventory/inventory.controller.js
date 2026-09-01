@@ -29,6 +29,15 @@ async function movements(req, res) {
   }
 }
 
+async function archivedMovements(req, res) {
+  try {
+    const movimientos = await inventoryService.listMovements(true);
+    res.json(movimientos);
+  } catch (error) {
+    res.status(503).json({ mensaje: "No se pudo cargar el historial archivado de inventario." });
+  }
+}
+
 async function lowStock(req, res) {
   try {
     const productos = await inventoryService.listLowStock();
@@ -71,4 +80,4 @@ async function adjustment(req, res) {
   }
 }
 
-module.exports = { adjustment, entry, exit, lowStock, movements, productDetail, summary };
+module.exports = { adjustment, archivedMovements, entry, exit, lowStock, movements, productDetail, summary };

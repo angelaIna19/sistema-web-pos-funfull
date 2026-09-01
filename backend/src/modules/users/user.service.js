@@ -26,28 +26,13 @@ async function getCurrentUser(adminId) {
 }
 
 async function updateCredentials(adminId, payload = {}) {
-  const usuario = cleanUsername(payload.usuario);
+  const usuarioSolicitado = cleanUsername(payload.usuario);
   const passwordActual = String(payload.passwordActual || "");
   const nuevoPassword = String(payload.nuevoPassword || "");
-
-  if (!usuario) {
-    throw createError("Ingrese el nuevo usuario.", 400);
-  }
-
-  if (/\s/.test(usuario)) {
-    throw createError("El usuario no debe contener espacios.", 400);
-  }
-
-  if (usuario.length > 80) {
-    throw createError("El usuario no debe superar 80 caracteres.", 400);
-  }
+  const confirmarPassword = String(payload.confirmarPassword || "");
 
   if (!passwordActual) {
     throw createError("Ingrese la contraseña actual.", 400);
-  }
-
-  if (nuevoPassword && nuevoPassword.length < 8) {
-    throw createError("La nueva contraseña debe tener mínimo 8 caracteres.", 400);
   }
 
   const admin = await userRepository.findById(adminId);
@@ -60,13 +45,42 @@ async function updateCredentials(adminId, payload = {}) {
     throw createError("La contraseña actual no es correcta.", 401);
   }
 
-  const existingUser = await userRepository.findByUsername(usuario);
+  const usuario = usuarioSolicitado || admin.usuario;
+
+  if (/\s/.test(usuario)) {
+    throw createError("El usuario no debe contener espacios.", 400);
+  }
+
+  if (usuario.length > 80) {
+    throw createError("El usuario no debe superar 80 caracteres.", 400);
+  }
+
+  if (nuevoPassword && !confirmarPassword) {
+    throw createError("Confirme la nueva contraseña.", 400);
+  }
+
+  if (nuevoPassword !== confirmarPassword) {
+    throw createError("La nueva contraseña y la confirmación no coinciden.", 400);
+  }
+
+  if (nuevoPassword && nuevoPassword.length < 8) {
+    throw createError("La nueva contraseña debe tener mínimo 8 caracteres.", 400);
+  }
+
+  const cambiaUsuario = usuario !== admin.usuario;
+  const cambiaPassword = Boolean(nuevoPassword) && !verifyPassword(nuevoPassword, admin.password_hash);
+
+  if (!cambiaUsuario && !cambiaPassword) {
+    throw createError("Ingrese un nuevo usuario o una nueva contraseña diferente a la actual.", 400);
+  }
+
+  const existingUser = cambiaUsuario ? await userRepository.findByUsername(usuario) : null;
 
   if (existingUser && Number(existingUser.id) !== Number(admin.id)) {
     throw createError("El usuario ingresado ya existe.", 409);
   }
 
-  const passwordHash = nuevoPassword ? hashPassword(nuevoPassword) : null;
+  const passwordHash = cambiaPassword ? hashPassword(nuevoPassword) : null;
   const updatedAdmin = await userRepository.updateCredentials(admin.id, usuario, passwordHash);
 
   return {

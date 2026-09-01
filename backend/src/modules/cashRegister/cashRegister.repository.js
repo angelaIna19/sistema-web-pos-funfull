@@ -94,9 +94,10 @@ async function findOpen() {
   return result.rows[0] ? mapCaja(result.rows[0]) : null;
 }
 
-async function findAll() {
+async function findAll(archived = false) {
   const result = await query(
     `${cajaResumenSelect}
+     WHERE c.abierta_en ${archived ? "<" : ">="} CURRENT_DATE - INTERVAL '6 months'
      ORDER BY c.abierta_en DESC`
   );
 
