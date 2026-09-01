@@ -7,10 +7,11 @@ export default function CuentaAdmin() {
   const location = useLocation();
   const navigate = useNavigate();
   const [usuarioActual, setUsuarioActual] = useState(localStorage.getItem("adminUsuario") || "admin");
-  const [nuevoUsuario, setNuevoUsuario] = useState(usuarioActual);
+  const [nuevoUsuario, setNuevoUsuario] = useState("");
   const [passwordActual, setPasswordActual] = useState("");
   const [nuevoPassword, setNuevoPassword] = useState("");
   const [confirmarPassword, setConfirmarPassword] = useState("");
+  const [passwordActualHabilitado, setPasswordActualHabilitado] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -24,10 +25,17 @@ export default function CuentaAdmin() {
         const cuenta = await obtenerMiCuenta();
         if (!activo) return;
         setUsuarioActual(cuenta.usuario);
-        setNuevoUsuario(cuenta.usuario);
+        setNuevoUsuario("");
         localStorage.setItem("adminUsuario", cuenta.usuario);
       } catch (err) {
-        if (activo) setError(err.response?.data?.mensaje || "No se pudo cargar la cuenta.");
+        if (!activo) return;
+        if (err.response?.status === 401) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminUsuario");
+          navigate("/login", { replace: true });
+          return;
+        }
+        setError(err.response?.data?.mensaje || "No se pudo cargar la cuenta.");
       } finally {
         if (activo) setCargando(false);
       }
@@ -35,18 +43,10 @@ export default function CuentaAdmin() {
 
     cargarCuenta();
 
-    const limpiarAutocompletado = window.setTimeout(() => {
-      if (!activo) return;
-      setPasswordActual("");
-      setNuevoPassword("");
-      setConfirmarPassword("");
-    }, 150);
-
     return () => {
       activo = false;
-      window.clearTimeout(limpiarAutocompletado);
     };
-  }, []);
+  }, [navigate]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -55,12 +55,22 @@ export default function CuentaAdmin() {
 
     const usuarioLimpio = nuevoUsuario.trim();
 
-    if (!usuarioLimpio) {
-      setError("Ingrese el nuevo usuario.");
+    if (!passwordActual) {
+      setError("Ingrese la contraseña actual.");
       return;
     }
 
-    if (nuevoPassword && nuevoPassword !== confirmarPassword) {
+    if (!usuarioLimpio && !nuevoPassword) {
+      setError("Ingrese un nuevo usuario o una nueva contraseña.");
+      return;
+    }
+
+    if (nuevoPassword && !confirmarPassword) {
+      setError("Confirme la nueva contraseña.");
+      return;
+    }
+
+    if (nuevoPassword !== confirmarPassword) {
       setError("La nueva contraseña y la confirmación no coinciden.");
       return;
     }
@@ -69,19 +79,24 @@ export default function CuentaAdmin() {
 
     try {
       const cuenta = await actualizarMisCredenciales({
-        usuario: usuarioLimpio,
+        usuario: usuarioLimpio || undefined,
         passwordActual,
         nuevoPassword: nuevoPassword || undefined,
+        confirmarPassword: confirmarPassword || undefined,
       });
 
       localStorage.setItem("adminUsuario", cuenta.usuario);
       setUsuarioActual(cuenta.usuario);
-      setNuevoUsuario(cuenta.usuario);
+      setNuevoUsuario("");
       setPasswordActual("");
       setNuevoPassword("");
       setConfirmarPassword("");
       setMensaje(cuenta.mensaje || "Credenciales actualizadas correctamente.");
     } catch (err) {
+      if (err.response?.status === 401) {
+        cerrarSesionInvalida();
+        return;
+      }
       setError(err.response?.data?.mensaje || "No se pudieron actualizar las credenciales.");
     } finally {
       setGuardando(false);
@@ -89,10 +104,11 @@ export default function CuentaAdmin() {
   }
 
   function limpiarFormulario() {
-    setNuevoUsuario(usuarioActual);
+    setNuevoUsuario("");
     setPasswordActual("");
     setNuevoPassword("");
     setConfirmarPassword("");
+    setPasswordActualHabilitado(false);
     setError("");
     setMensaje("");
   }
@@ -101,6 +117,12 @@ export default function CuentaAdmin() {
     const rutaAnterior = location.state?.from || "/admin/productos";
     limpiarFormulario();
     navigate(rutaAnterior, { replace: true });
+  }
+
+  function cerrarSesionInvalida() {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUsuario");
+    navigate("/login", { replace: true });
   }
 
   return (
@@ -123,7 +145,7 @@ export default function CuentaAdmin() {
               <div className="account-form-grid">
                 <label className="account-field">
                   <span>Usuario actual</span>
-                  <input value={usuarioActual} readOnly autoComplete="off" />
+                  <input value={usuarioActual} readOnly autoComplete="username" name="usuario-actual" />
                 </label>
 
                 <label className="account-field">
@@ -133,7 +155,6 @@ export default function CuentaAdmin() {
                     onChange={(event) => setNuevoUsuario(event.target.value)}
                     autoComplete="off"
                     name="nuevo-usuario-admin"
-                    required
                   />
                 </label>
 
@@ -144,8 +165,13 @@ export default function CuentaAdmin() {
                     name="password-actual-manual"
                     value={passwordActual}
                     onChange={(event) => setPasswordActual(event.target.value)}
-                    autoComplete="new-password"
+                    onFocus={() => {
+                      setPasswordActual("");
+                      setPasswordActualHabilitado(true);
+                    }}
+                    autoComplete="current-password"
                     placeholder="Escribe tu contraseña actual"
+                    readOnly={!passwordActualHabilitado}
                     required
                   />
                 </label>

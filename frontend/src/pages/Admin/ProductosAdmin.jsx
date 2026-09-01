@@ -317,7 +317,6 @@ export default function ProductosAdmin() {
         <header className="admin-header">
           <div>
             <h2>Gestión de Productos</h2>
-            <p>Administrador: {usuario}</p>
           </div>
         </header>
 

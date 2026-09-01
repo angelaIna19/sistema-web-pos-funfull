@@ -96,6 +96,13 @@ export async function obtenerCajas() {
   return respuesta.data;
 }
 
+export async function obtenerCajasArchivadas() {
+  const respuesta = await axios.get(`${API_URL}/admin/cajas/archivadas`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
 export async function obtenerCajaActual() {
   const respuesta = await axios.get(`${API_URL}/admin/caja/actual`, {
     headers: getAuthHeaders(),
@@ -137,6 +144,13 @@ export async function obtenerVentas() {
   return respuesta.data;
 }
 
+export async function obtenerVentasArchivadas() {
+  const respuesta = await axios.get(`${API_URL}/admin/ventas/archivadas`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
 export async function obtenerDetalleVenta(id) {
   const respuesta = await axios.get(`${API_URL}/admin/ventas/${id}`, {
     headers: getAuthHeaders(),
@@ -159,6 +173,13 @@ export async function obtenerResumenInventario() {
 
 export async function obtenerMovimientosInventario() {
   const respuesta = await axios.get(`${API_URL}/admin/inventario/movimientos`, {
+    headers: getAuthHeaders(),
+  });
+  return respuesta.data;
+}
+
+export async function obtenerMovimientosInventarioArchivados() {
+  const respuesta = await axios.get(`${API_URL}/admin/inventario/movimientos/archivados`, {
     headers: getAuthHeaders(),
   });
   return respuesta.data;
@@ -198,9 +219,10 @@ export async function registrarAjusteInventario(datos) {
   });
   return respuesta.data;
 }
-export async function obtenerReporteVentas() {
+export async function obtenerReporteVentas(periodo = "mes") {
   const respuesta = await axios.get(`${API_URL}/admin/reportes/ventas`, {
     headers: getAuthHeaders(),
+    params: { periodo },
   });
   return respuesta.data;
 }

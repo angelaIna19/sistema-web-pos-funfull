@@ -17,10 +17,18 @@ const PERIODOS_ORDENES = [
   { value: "mes", label: "Mes" },
 ];
 
+const PERIODOS_VENTAS = [
+  { value: "semana", label: "Semana actual" },
+  { value: "quincena", label: "Quincena actual" },
+  { value: "mes", label: "Mes actual" },
+  { value: "todo", label: "Todo" },
+];
+
 export default function ReportesAdmin({ modo = "ventas" }) {
   const navigate = useNavigate();
   const usuario = useMemo(() => localStorage.getItem("adminUsuario") || "admin", []);
   const [reporteVentas, setReporteVentas] = useState(null);
+  const [periodoVentas, setPeriodoVentas] = useState("mes");
   const [reporteCaja, setReporteCaja] = useState(null);
   const [cajas, setCajas] = useState([]);
   const [cajaSeleccionadaId, setCajaSeleccionadaId] = useState("");
@@ -58,17 +66,16 @@ export default function ReportesAdmin({ modo = "ventas" }) {
           ? "Ranking de productos"
           : "Alertas de stock";
 
-  const datosListado = esVentasPorCaja
-    ? reporteCaja?.ventas || []
-    : esOrdenes
-      ? ordenes
-      : esMasVendidos
-        ? productosVendidos
-        : esStockBajo
-          ? stockBajo
-          : [];
-
   const datosFiltrados = useMemo(() => {
+    const datosListado = esVentasPorCaja
+      ? reporteCaja?.productos || []
+      : esOrdenes
+        ? ordenes
+        : esMasVendidos
+          ? productosVendidos
+          : esStockBajo
+            ? stockBajo
+            : [];
     const termino = terminoBusqueda.trim().toLowerCase();
     if (!termino) return datosListado;
 
@@ -78,6 +85,9 @@ export default function ReportesAdmin({ modo = "ventas" }) {
       item.ordenes,
       item.productosVendidos,
       item.total,
+      item.cantidadVendida,
+      item.precioUnitario,
+      item.totalVendido,
       item.codigo,
       item.nombre,
       item.categoria,
@@ -87,12 +97,14 @@ export default function ReportesAdmin({ modo = "ventas" }) {
       item.estado,
       item.creadaEn,
     ].some((valor) => String(valor || "").toLowerCase().includes(termino)));
-  }, [datosListado, terminoBusqueda]);
+  }, [esMasVendidos, esOrdenes, esStockBajo, esVentasPorCaja, ordenes, productosVendidos, reporteCaja, stockBajo, terminoBusqueda]);
 
   useEffect(() => {
     setTerminoBusqueda("");
     cargarReporte();
-  }, [modo, periodoOrdenes, cajaSeleccionadaId]);
+    // The report loader intentionally follows these report controls.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modo, periodoVentas, periodoOrdenes, cajaSeleccionadaId]);
 
   async function cargarReporte() {
     setCargando(true);
@@ -100,7 +112,7 @@ export default function ReportesAdmin({ modo = "ventas" }) {
 
     try {
       if (esVentas) {
-        const data = await obtenerReporteVentas();
+        const data = await obtenerReporteVentas(periodoVentas);
         setReporteVentas(data);
         limpiarReportesSecundarios();
       }
@@ -208,8 +220,17 @@ export default function ReportesAdmin({ modo = "ventas" }) {
         <header className="admin-header no-print">
           <div>
             <h2>{tituloPantalla}</h2>
-            <p>Administrador: {usuario}</p>
           </div>
+          {esVentas && (
+            <label className="reports-period-select">
+              Período
+              <select value={periodoVentas} onChange={(event) => setPeriodoVentas(event.target.value)}>
+                {PERIODOS_VENTAS.map((periodo) => (
+                  <option key={periodo.value} value={periodo.value}>{periodo.label}</option>
+                ))}
+              </select>
+            </label>
+          )}
         </header>
 
         {error && <p className="error-message admin-feedback no-print">{error}</p>}
@@ -256,6 +277,7 @@ export default function ReportesAdmin({ modo = "ventas" }) {
   function renderReporteVentas() {
     const resumen = reporteVentas?.resumen || {};
     const metodos = reporteVentas?.metodosPago || [];
+    const periodoSeleccionado = PERIODOS_VENTAS.find((periodo) => periodo.value === periodoVentas)?.label || "Mes actual";
     const cards = [
       { label: "Ventas registradas", value: formatNumber(resumen.ventasRegistradas) },
       { label: "Ventas anuladas", value: formatNumber(resumen.ventasAnuladas), tone: "danger" },
@@ -271,6 +293,7 @@ export default function ReportesAdmin({ modo = "ventas" }) {
             <div>
               <h2>Licorería Fun Full</h2>
               <p>Reporte de ventas</p>
+              <p>Período: {periodoSeleccionado}</p>
             </div>
             <div>
               <span>Fecha de impresión</span>
@@ -280,6 +303,7 @@ export default function ReportesAdmin({ modo = "ventas" }) {
 
           <div className="report-print-totals">
             <div><span>Ventas registradas</span><strong>{formatNumber(resumen.ventasRegistradas)}</strong></div>
+            <div><span>Ventas anuladas</span><strong>{formatNumber(resumen.ventasAnuladas)}</strong></div>
             <div><span>Subtotal</span><strong>{formatMoney(resumen.subtotal)}</strong></div>
             <div><span>Impuesto</span><strong>{formatMoney(resumen.impuesto)}</strong></div>
             <div><span>Total vendido</span><strong>{formatMoney(resumen.total)}</strong></div>
@@ -333,11 +357,19 @@ export default function ReportesAdmin({ modo = "ventas" }) {
 
     const caja = reporteCaja.caja || {};
     const resumen = reporteCaja.resumen || {};
+    const productos = reporteCaja.productos || [];
+    const totalImpuesto = (reporteCaja.ventas || [])
+      .filter((venta) => venta.estado === "REGISTRADA")
+      .reduce((total, venta) => total + Number(venta.impuesto || 0), 0);
     const cards = [
+      { label: "Caja", value: `#${caja.id}` },
       { label: "Trabajador", value: caja.nombreTrabajador || "-" },
-      { label: "Estado", value: formatStatus(caja.estado) },
       { label: "Apertura", value: formatDateTime(caja.abiertaEn) },
-      { label: "Vendido", value: formatMoney(resumen.totalVendido), tone: "success" },
+      { label: "Cierre", value: caja.cerradaEn ? formatDateTime(caja.cerradaEn) : "Caja abierta" },
+      { label: "Estado", value: formatStatus(caja.estado) },
+      { label: "Monto inicial", value: formatMoney(caja.montoInicial) },
+      { label: "Ventas registradas", value: formatNumber(resumen.ventasRegistradas) },
+      { label: "Unidades vendidas", value: formatNumber(resumen.unidadesVendidas), tone: "success" },
       { label: "Anuladas", value: formatNumber(resumen.ventasAnuladas), tone: "danger" },
     ];
 
@@ -356,18 +388,22 @@ export default function ReportesAdmin({ modo = "ventas" }) {
           </div>
 
           <div className="report-print-info-grid">
+            <div><span>Caja</span><strong>#{caja.id}</strong></div>
             <div><span>Trabajador</span><strong>{caja.nombreTrabajador || "-"}</strong></div>
             <div><span>Apertura</span><strong>{formatDateTime(caja.abiertaEn)}</strong></div>
-            <div><span>Cierre</span><strong>{formatDateTime(caja.cerradaEn)}</strong></div>
+            <div><span>Cierre</span><strong>{caja.cerradaEn ? formatDateTime(caja.cerradaEn) : "Caja abierta"}</strong></div>
+            <div><span>Estado</span><strong>{formatStatus(caja.estado)}</strong></div>
             <div><span>Monto inicial</span><strong>{formatMoney(caja.montoInicial)}</strong></div>
-            <div><span>Esperado en caja</span><strong>{caja.montoEsperado === null ? "-" : formatMoney(caja.montoEsperado)}</strong></div>
+            <div><span>Ventas registradas</span><strong>{formatNumber(resumen.ventasRegistradas)}</strong></div>
+            <div><span>Unidades vendidas</span><strong>{formatNumber(resumen.unidadesVendidas)}</strong></div>
           </div>
 
           <div className="report-print-totals">
-            <div><span>Ventas registradas</span><strong>{formatNumber(resumen.ventasRegistradas)}</strong></div>
             <div><span>Efectivo</span><strong>{formatMoney(resumen.totalEfectivo)}</strong></div>
             <div><span>Transferencia</span><strong>{formatMoney(resumen.totalTransferencia)}</strong></div>
-            <div><span>Total vendido</span><strong>{formatMoney(resumen.totalVendido)}</strong></div>
+            <div><span>Entradas</span><strong>{formatMoney(caja.ingresosManuales)}</strong></div>
+            <div><span>Salidas</span><strong>{formatMoney(caja.egresosManuales)}</strong></div>
+            <div><span>Efectivo esperado</span><strong>{caja.montoEsperado === null ? "-" : formatMoney(caja.montoEsperado)}</strong></div>
           </div>
         </div>
 
@@ -381,47 +417,52 @@ export default function ReportesAdmin({ modo = "ventas" }) {
         </div>
 
         <div className="cash-box-report-details screen-only">
-          <span>Inicial: <strong>{formatMoney(caja.montoInicial)}</strong></span>
           <span>Efectivo: <strong>{formatMoney(resumen.totalEfectivo)}</strong></span>
           <span>Transferencia: <strong>{formatMoney(resumen.totalTransferencia)}</strong></span>
           <span>Entradas: <strong>{formatMoney(caja.ingresosManuales)}</strong></span>
           <span>Salidas: <strong>{formatMoney(caja.egresosManuales)}</strong></span>
-          <span>Esperado: <strong>{caja.montoEsperado === null ? "-" : formatMoney(caja.montoEsperado)}</strong></span>
+          <span>Efectivo esperado: <strong>{caja.montoEsperado === null ? "-" : formatMoney(caja.montoEsperado)}</strong></span>
         </div>
 
         <div className="admin-table-wrap reports-table-wrap">
-          {reporteCaja.ventas.length === 0 ? (
-            <p>No hay ventas registradas en esta caja.</p>
+          {productos.length === 0 ? (
+            <p>No hay productos vendidos en esta caja.</p>
           ) : datosFiltrados.length === 0 ? (
-            <p>No se encontraron ventas.</p>
+            <p>No se encontraron productos.</p>
           ) : (
             <table className="admin-table products-table reports-table cash-box-sales-table">
               <thead>
                 <tr>
-                  <th>Número</th>
-                  <th>Fecha</th>
-                  <th>Método</th>
-                  <th>Subtotal</th>
-                  <th>Impuesto</th>
-                  <th>Total</th>
-                  <th>Estado</th>
+                  <th>Producto</th>
+                  <th>Cantidad vendida</th>
+                  <th>Precio unitario</th>
+                  <th>Total vendido</th>
                 </tr>
               </thead>
               <tbody>
-                {datosFiltrados.map((venta) => (
-                  <tr key={venta.id} className={venta.estado === "ANULADA" ? "sale-cancelled-row" : ""}>
-                    <td><strong>#{venta.id}</strong></td>
-                    <td>{formatDateTime(venta.creadaEn)}</td>
-                    <td>{formatPaymentMethod(venta.metodoPago)}</td>
-                    <td>{formatMoney(venta.subtotal)}</td>
-                    <td>{formatMoney(venta.impuesto)}</td>
-                    <td><strong>{formatMoney(venta.total)}</strong></td>
-                    <td><span className={`status-pill ${venta.estado === "ANULADA" ? "danger" : ""}`}>{formatStatus(venta.estado)}</span></td>
+                {datosFiltrados.map((producto) => (
+                  <tr key={producto.id}>
+                    <td><strong>{producto.nombre}</strong></td>
+                    <td>{formatNumber(producto.cantidadVendida)}</td>
+                    <td>{formatMoney(producto.precioUnitario)}</td>
+                    <td><strong>{formatMoney(producto.totalVendido)}</strong></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
+        </div>
+
+        <div className="cash-box-report-details cash-box-product-totals screen-only">
+          <span>Subtotal: <strong>{formatMoney(resumen.totalProductos)}</strong></span>
+          <span>Impuesto: <strong>{formatMoney(totalImpuesto)}</strong></span>
+          <span>Total vendido: <strong>{formatMoney(resumen.totalVendido)}</strong></span>
+        </div>
+
+        <div className="report-print-totals print-only">
+          <div><span>Subtotal</span><strong>{formatMoney(resumen.totalProductos)}</strong></div>
+          <div><span>Impuesto</span><strong>{formatMoney(totalImpuesto)}</strong></div>
+          <div><span>Total vendido</span><strong>{formatMoney(resumen.totalVendido)}</strong></div>
         </div>
       </>
     );

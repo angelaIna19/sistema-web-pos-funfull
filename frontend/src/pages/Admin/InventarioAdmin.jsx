@@ -4,6 +4,7 @@ import AdminNavbar from "../../components/Admin/AdminNavbar";
 import {
   obtenerDetalleProductoInventario,
   obtenerMovimientosInventario,
+  obtenerMovimientosInventarioArchivados,
   obtenerProductos,
   obtenerResumenInventario,
   obtenerStockBajo,
@@ -43,6 +44,7 @@ export default function InventarioAdmin({ modo = "resumen" }) {
   const [resumen, setResumen] = useState(null);
   const [productos, setProductos] = useState([]);
   const [movimientos, setMovimientos] = useState([]);
+  const [tipoHistorial, setTipoHistorial] = useState("reciente");
   const [stockBajo, setStockBajo] = useState([]);
   const [formulario, setFormulario] = useState(formularioInicial);
   const [accionActual, setAccionActual] = useState(null);
@@ -108,7 +110,10 @@ export default function InventarioAdmin({ modo = "resumen" }) {
       }
 
       if (esMovimientos) {
-        const [productosData, movimientosData] = await Promise.all([obtenerProductos(), obtenerMovimientosInventario()]);
+        const cargarMovimientos = tipoHistorial === "archivado"
+          ? obtenerMovimientosInventarioArchivados
+          : obtenerMovimientosInventario;
+        const [productosData, movimientosData] = await Promise.all([obtenerProductos(), cargarMovimientos()]);
         setProductos(productosData);
         setMovimientos(movimientosData);
         setStockBajo([]);
@@ -148,7 +153,9 @@ export default function InventarioAdmin({ modo = "resumen" }) {
     setFormulario(formularioInicial);
     setMensaje("");
     cargarInventario();
-  }, [modo]);
+    // The loader follows the active inventory mode and movement history range.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modo, tipoHistorial]);
 
   function cerrarSesion() {
     localStorage.removeItem("adminToken");
@@ -276,7 +283,6 @@ export default function InventarioAdmin({ modo = "resumen" }) {
         <header className="admin-header">
           <div>
             <h2>{tituloPantalla}</h2>
-            <p>Administrador: {usuario}</p>
           </div>
         </header>
 
@@ -284,7 +290,18 @@ export default function InventarioAdmin({ modo = "resumen" }) {
         {!accionActual && error && <p className="error-message admin-feedback">{error}</p>}
 
         <section className="productos-admin-list products-only-list inventory-panel">
-          <h3>{tituloPanel}</h3>
+          {esMovimientos ? (
+            <div className="history-panel-header">
+              <h3>{tipoHistorial === "archivado" ? "Movimientos archivados" : "Movimientos recientes"}</h3>
+              <label className="reports-period-select">
+                Historial
+                <select value={tipoHistorial} onChange={(event) => setTipoHistorial(event.target.value)}>
+                  <option value="reciente">Historial reciente</option>
+                  <option value="archivado">Historial archivado</option>
+                </select>
+              </label>
+            </div>
+          ) : <h3>{tituloPanel}</h3>}
           {cargando && <p>Cargando inventario...</p>}
           {!cargando && esResumen && renderResumen()}
           {!cargando && !esResumen && datosFiltrados.length === 0 && (

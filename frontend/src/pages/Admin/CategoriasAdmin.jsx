@@ -194,7 +194,6 @@ export default function CategoriasAdmin() {
         <header className="admin-header">
           <div>
             <h2>Gestion de Categorias</h2>
-            <p>Administrador: {usuario}</p>
           </div>
         </header>
 

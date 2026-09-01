@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
-import { abrirCaja, cerrarCaja, obtenerCajaActual, obtenerCajas } from "../../services/api";
+import { abrirCaja, cerrarCaja, obtenerCajaActual, obtenerCajas, obtenerCajasArchivadas } from "../../services/api";
 
 const formularioInicial = {
   nombreTrabajador: "",
@@ -21,6 +21,7 @@ export default function CajaAdmin({ modo = "actual" }) {
   const usuario = useMemo(() => localStorage.getItem("adminUsuario") || "admin", []);
   const [cajaActual, setCajaActual] = useState(null);
   const [cajas, setCajas] = useState([]);
+  const [tipoHistorial, setTipoHistorial] = useState("reciente");
   const [formulario, setFormulario] = useState(formularioInicial);
   const [formularioCierre, setFormularioCierre] = useState(cierreInicial);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -42,7 +43,7 @@ export default function CajaAdmin({ modo = "actual" }) {
 
     try {
       if (modo === "historial") {
-        const historialData = await obtenerCajas();
+        const historialData = tipoHistorial === "archivado" ? await obtenerCajasArchivadas() : await obtenerCajas();
         setCajas(historialData);
       } else {
         const actualData = await obtenerCajaActual();
@@ -61,7 +62,9 @@ export default function CajaAdmin({ modo = "actual" }) {
 
   useEffect(() => {
     cargarCaja();
-  }, [modo]);
+    // The loader follows the selected view and history range.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modo, tipoHistorial]);
 
   useEffect(() => {
     if (modo !== "actual" || cargando) return;
@@ -72,11 +75,17 @@ export default function CajaAdmin({ modo = "actual" }) {
     accionProcesada.current = accion;
 
     if (accion === "abrir" && !cajaActual) {
-      abrirFormularioCaja();
+      setFormulario(formularioInicial);
+      setMensaje("");
+      setError("");
+      setMostrarFormulario(true);
     }
 
     if (accion === "cerrar" && cajaActual) {
-      abrirModalCierre();
+      setFormularioCierre(cierreInicial);
+      setMensaje("");
+      setError("");
+      setMostrarCierre(true);
     }
   }, [modo, cargando, cajaActual, searchParams]);
 
@@ -190,7 +199,6 @@ export default function CajaAdmin({ modo = "actual" }) {
         <header className="admin-header">
           <div>
             <h2>{modo === "historial" ? "Historial de cajas" : "Gestión de Caja"}</h2>
-            <p>Administrador: {usuario}</p>
           </div>
         </header>
 
@@ -248,7 +256,16 @@ export default function CajaAdmin({ modo = "actual" }) {
     return (
       <section className="caja-layout caja-layout-history">
         <section className="productos-admin-list caja-history-panel">
-          <h3>Cajas registradas</h3>
+          <div className="history-panel-header">
+            <h3>{tipoHistorial === "archivado" ? "Cajas archivadas" : "Cajas recientes"}</h3>
+            <label className="reports-period-select">
+              Historial
+              <select value={tipoHistorial} onChange={(event) => setTipoHistorial(event.target.value)}>
+                <option value="reciente">Historial reciente</option>
+                <option value="archivado">Historial archivado</option>
+              </select>
+            </label>
+          </div>
           {cajas.length === 0 ? (
             <p>No hay cajas registradas.</p>
           ) : (

@@ -119,6 +119,8 @@ export default function NuevaVentaAdmin() {
 
   useEffect(() => {
     consultarCajaActual();
+    // Initial cash-register check; later refreshes are triggered by actions.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function cerrarSesion() {
@@ -451,7 +453,6 @@ export default function NuevaVentaAdmin() {
           <header className="admin-header sales-header">
             <div>
               <h2>{vistaCaja ? "Caja" : "Nueva venta"}</h2>
-              <p>Administrador: {usuario}</p>
             </div>
           </header>
         )}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
-import { anularVenta, obtenerDetalleVenta, obtenerVentas } from "../../services/api";
+import { anularVenta, obtenerDetalleVenta, obtenerVentas, obtenerVentasArchivadas } from "../../services/api";
 
 export default function VentasHistorialAdmin() {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ export default function VentasHistorialAdmin() {
   const esModoAnular = modoPantalla === "anular";
   const tituloPantalla = modoPantalla === "detalle" ? "Detalle de ventas" : modoPantalla === "anular" ? "Anular venta" : "Historial de ventas";
   const [ventas, setVentas] = useState([]);
+  const [tipoHistorial, setTipoHistorial] = useState("reciente");
   const [ventaDetalle, setVentaDetalle] = useState(null);
   const [ventaAnular, setVentaAnular] = useState(null);
   const [ventaSeleccionadaId, setVentaSeleccionadaId] = useState(null);
@@ -45,14 +46,17 @@ export default function VentasHistorialAdmin() {
 
   useEffect(() => {
     cargarVentas();
-  }, []);
+    setVentaSeleccionadaId(null);
+    setVentaDetalle(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tipoHistorial]);
 
   async function cargarVentas() {
     setCargando(true);
     setError("");
 
     try {
-      const data = await obtenerVentas();
+      const data = tipoHistorial === "archivado" ? await obtenerVentasArchivadas() : await obtenerVentas();
       setVentas(data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -172,7 +176,6 @@ export default function VentasHistorialAdmin() {
         <header className="admin-header">
           <div>
             <h2>{tituloPantalla}</h2>
-            <p>Administrador: {usuario}</p>
           </div>
         </header>
 
@@ -180,7 +183,16 @@ export default function VentasHistorialAdmin() {
         {error && !ventaAnular && <p className="error-message admin-feedback">{error}</p>}
 
         <section className="productos-admin-list products-only-list ventas-history-panel">
-          <h3>Ventas registradas</h3>
+          <div className="history-panel-header">
+            <h3>{tipoHistorial === "archivado" ? "Ventas archivadas" : "Ventas recientes"}</h3>
+            <label className="reports-period-select">
+              Historial
+              <select value={tipoHistorial} onChange={(event) => setTipoHistorial(event.target.value)}>
+                <option value="reciente">Historial reciente</option>
+                <option value="archivado">Historial archivado</option>
+              </select>
+            </label>
+          </div>
 
           {cargando && <p>Cargando ventas...</p>}
           {!cargando && ventas.length === 0 && <p>No hay ventas registradas.</p>}
