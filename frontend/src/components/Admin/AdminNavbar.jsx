@@ -137,8 +137,6 @@ export default function AdminNavbar({
               <div className="admin-dropdown-menu is-open" role="menu">
                 <Link to="/admin/ventas/nueva" role="menuitem" onClick={cerrarMenu}>Nueva venta</Link>
                 <Link to="/admin/ventas/historial" role="menuitem" onClick={cerrarMenu}>Historial de ventas</Link>
-                <Link to="/admin/ventas/historial?modo=detalle" role="menuitem" onClick={cerrarMenu}>Detalle de ventas</Link>
-                <Link to="/admin/ventas/historial?modo=anular" role="menuitem" onClick={cerrarMenu}>Anular venta</Link>
               </div>
             )}
           </div>

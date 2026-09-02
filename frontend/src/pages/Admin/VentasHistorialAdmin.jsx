@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
+import RowActionsMenu from "../../components/Admin/RowActionsMenu";
 import { anularVenta, obtenerDetalleVenta, obtenerVentas, obtenerVentasArchivadas } from "../../services/api";
 
 export default function VentasHistorialAdmin() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const usuario = useMemo(() => localStorage.getItem("adminUsuario") || "admin", []);
-  const modoPantalla = searchParams.get("modo") || "historial";
-  const esModoAnular = modoPantalla === "anular";
-  const tituloPantalla = modoPantalla === "detalle" ? "Detalle de ventas" : modoPantalla === "anular" ? "Anular venta" : "Historial de ventas";
+  const tituloPantalla = "Historial de ventas";
   const [ventas, setVentas] = useState([]);
   const [tipoHistorial, setTipoHistorial] = useState("reciente");
   const [ventaDetalle, setVentaDetalle] = useState(null);
   const [ventaAnular, setVentaAnular] = useState(null);
-  const [ventaSeleccionadaId, setVentaSeleccionadaId] = useState(null);
+  const [menuVentaId, setMenuVentaId] = useState(null);
   const [motivoAnulacion, setMotivoAnulacion] = useState("");
   const [terminoBusqueda, setTerminoBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -22,12 +20,6 @@ export default function VentasHistorialAdmin() {
   const [guardandoAnulacion, setGuardandoAnulacion] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
-
-  const ventaSeleccionada = useMemo(
-    () => ventas.find((venta) => venta.id === ventaSeleccionadaId) || null,
-    [ventas, ventaSeleccionadaId]
-  );
-  const puedeAnularSeleccionada = Boolean(esModoAnular && ventaSeleccionada && ventaSeleccionada.estado === "REGISTRADA");
 
   const ventasFiltradas = useMemo(() => {
     const termino = terminoBusqueda.trim().toLowerCase();
@@ -46,8 +38,8 @@ export default function VentasHistorialAdmin() {
 
   useEffect(() => {
     cargarVentas();
-    setVentaSeleccionadaId(null);
     setVentaDetalle(null);
+    setMenuVentaId(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tipoHistorial]);
 
@@ -67,19 +59,6 @@ export default function VentasHistorialAdmin() {
     } finally {
       setCargando(false);
     }
-  }
-
-  function seleccionarVenta(venta) {
-    if (modoPantalla === "detalle") {
-      abrirDetalle(venta);
-      return;
-    }
-
-    if (!esModoAnular) return;
-
-    setVentaSeleccionadaId((actual) => (actual === venta.id ? null : venta.id));
-    setMensaje("");
-    setError("");
   }
 
   async function abrirDetalle(venta) {
@@ -153,15 +132,7 @@ export default function VentasHistorialAdmin() {
         usuario={usuario}
         showToolbar
         forceToolbar
-        onDeleteProduct={() => {
-          if (!puedeAnularSeleccionada) return;
-          abrirModalAnulacion(ventaSeleccionada);
-        }}
-        productoSeleccionado={puedeAnularSeleccionada}
-        showEditDelete={esModoAnular}
-        showEditButton={false}
-        showDeleteButton={esModoAnular}
-        deleteButtonLabel="Anular venta"
+        showEditDelete={false}
         showNewButton={false}
         showViewToggle={false}
         showToolbarActions
@@ -211,11 +182,12 @@ export default function VentasHistorialAdmin() {
                     <th>Impuesto</th>
                     <th>Total</th>
                     <th>Estado</th>
+                    <th className="row-actions-heading" aria-label="Opciones"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {ventasFiltradas.map((venta) => (
-                    <tr key={venta.id} onClick={() => seleccionarVenta(venta)} className={getSaleRowClass(venta, esModoAnular ? ventaSeleccionadaId : null)}>
+                    <tr key={venta.id} className={getSaleRowClass(venta)}>
                       <td><strong>#{venta.id}</strong></td>
                       <td>{formatDateTime(venta.creadaEn)}</td>
                       <td>{venta.trabajador || "-"}</td>
@@ -224,7 +196,15 @@ export default function VentasHistorialAdmin() {
                       <td>{formatMoney(venta.impuesto)}</td>
                       <td><strong>{formatMoney(venta.total)}</strong></td>
                       <td><span className={venta.estado === "ANULADA" ? "status-pill danger" : "status-pill"}>{formatEstado(venta.estado)}</span></td>
-
+                      <td className="row-actions-cell" onClick={(event) => event.stopPropagation()}>
+                        <RowActionsMenu
+                          itemId={`venta-${venta.id}`}
+                          ariaLabel={`Opciones de la venta ${venta.id}`}
+                          isOpen={menuVentaId === venta.id}
+                          onOpenChange={(itemId) => setMenuVentaId(itemId ? venta.id : null)}
+                          actions={getSaleActions(venta)}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -304,6 +284,18 @@ export default function VentasHistorialAdmin() {
     );
   }
 
+  function getSaleActions(venta) {
+    const actions = [
+      { label: "Ver detalle", onClick: () => abrirDetalle(venta) },
+    ];
+
+    if (venta.estado === "REGISTRADA") {
+      actions.push({ label: "Anular venta", onClick: () => abrirModalAnulacion(venta), danger: true });
+    }
+
+    return actions;
+  }
+
   function renderModalAnulacion() {
     return (
       <div className="product-modal-backdrop" role="presentation">
@@ -336,10 +328,9 @@ export default function VentasHistorialAdmin() {
   }
 }
 
-function getSaleRowClass(venta, ventaSeleccionadaId) {
-  const clases = ["clickable-row"];
+function getSaleRowClass(venta) {
+  const clases = [];
   if (venta.estado === "ANULADA") clases.push("sale-cancelled-row");
-  if (venta.id === ventaSeleccionadaId) clases.push("selected-row");
   return clases.join(" ");
 }
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
+import RowActionsMenu from "../../components/Admin/RowActionsMenu";
 import {
   actualizarCategoria,
   crearCategoria,
@@ -19,7 +20,7 @@ export default function CategoriasAdmin() {
   const [categorias, setCategorias] = useState([]);
   const [formulario, setFormulario] = useState(categoriaVacia);
   const [categoriaEditando, setCategoriaEditando] = useState(null);
-  const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState(null);
+  const [menuCategoriaId, setMenuCategoriaId] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [terminoBusqueda, setTerminoBusqueda] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -36,11 +37,6 @@ export default function CategoriasAdmin() {
       categoria.descripcion,
     ].some((valor) => String(valor || "").toLowerCase().includes(termino)));
   }, [categorias, terminoBusqueda]);
-  const categoriaSeleccionada = useMemo(
-    () => categorias.find((categoria) => categoria.id === categoriaSeleccionadaId) || null,
-    [categorias, categoriaSeleccionadaId]
-  );
-
   async function cargarCategorias() {
     setCargando(true);
     setError("");
@@ -48,7 +44,6 @@ export default function CategoriasAdmin() {
     try {
       const data = await obtenerCategorias();
       setCategorias(data);
-      setCategoriaSeleccionadaId((actual) => (data.some((categoria) => categoria.id === actual) ? actual : null));
     } catch (err) {
       setError(err.response?.data?.mensaje || "No se pudo cargar la lista de categorias.");
     } finally {
@@ -76,27 +71,9 @@ export default function CategoriasAdmin() {
     setMostrarFormulario(true);
   }
 
-  function seleccionarCategoria(categoria) {
-    setCategoriaSeleccionadaId((actual) => (actual === categoria.id ? null : categoria.id));
-    setMensaje("");
-    setError("");
-  }
-
-  function limpiarSeleccion() {
-    setCategoriaSeleccionadaId(null);
-  }
-
   function cambiarBusqueda(valor) {
     setTerminoBusqueda(valor);
-    setCategoriaSeleccionadaId(null);
-  }
-
-  function editarCategoriaSeleccionada() {
-    if (categoriaSeleccionada) editarCategoria(categoriaSeleccionada);
-  }
-
-  function borrarCategoriaSeleccionada() {
-    if (categoriaSeleccionada) borrarCategoria(categoriaSeleccionada);
+    setMenuCategoriaId(null);
   }
 
   function editarCategoria(categoria) {
@@ -131,7 +108,6 @@ export default function CategoriasAdmin() {
         setMensaje("Categoria registrada correctamente.");
       }
 
-      setCategoriaSeleccionadaId(null);
       cerrarFormulario();
       await cargarCategorias();
     } catch (err) {
@@ -157,7 +133,6 @@ export default function CategoriasAdmin() {
 
     try {
       await eliminarCategoria(categoria.id);
-      setCategoriaSeleccionadaId(null);
       setMensaje("Categoria eliminada correctamente.");
       await cargarCategorias();
     } catch (err) {
@@ -180,9 +155,7 @@ export default function CategoriasAdmin() {
       <AdminNavbar
         usuario={usuario}
         onNewProduct={abrirNuevaCategoria}
-        onEditProduct={editarCategoriaSeleccionada}
-        onDeleteProduct={borrarCategoriaSeleccionada}
-        productoSeleccionado={Boolean(categoriaSeleccionada)}
+        showEditDelete={false}
         terminoBusqueda={terminoBusqueda}
         onSearchChange={cambiarBusqueda}
         totalProductos={categoriasFiltradas.length}
@@ -200,7 +173,7 @@ export default function CategoriasAdmin() {
         {mensaje && <p className="success-message admin-feedback">{mensaje}</p>}
         {!mostrarFormulario && error && <p className="error-message admin-feedback">{error}</p>}
 
-        <section className="productos-admin-list products-only-list" onClick={limpiarSeleccion}>
+        <section className="productos-admin-list products-only-list">
           <h3>Categorias registradas</h3>
           {cargando && <p>Cargando categorias...</p>}
           {!cargando && categorias.length === 0 && <p>No hay categorias registradas.</p>}
@@ -214,19 +187,26 @@ export default function CategoriasAdmin() {
                     <th>Descripcion</th>
                     <th>Productos</th>
                     <th>Estado</th>
+                    <th className="row-actions-heading" aria-label="Opciones"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {categoriasFiltradas.map((categoria) => (
-                    <tr
-                      key={categoria.id}
-                      className={categoriaSeleccionadaId === categoria.id ? "selected-row" : ""}
-                      onClick={() => seleccionarCategoria(categoria)}
-                    >
+                    <tr key={categoria.id}>
                       <td><strong>{categoria.nombre}</strong></td>
                       <td>{categoria.descripcion || "Sin descripcion"}</td>
                       <td>{categoria.productos}</td>
                       <td>{categoria.estado ? "Activo" : "Inactivo"}</td>
+                      <td className="row-actions-cell">
+                        <RowActionsMenu
+                          itemId={`categoria-${categoria.id}`}
+                          ariaLabel="Opciones de la categoría"
+                          isOpen={menuCategoriaId === categoria.id}
+                          onOpenChange={(itemId) => setMenuCategoriaId(itemId ? categoria.id : null)}
+                          onEdit={() => editarCategoria(categoria)}
+                          onDelete={() => borrarCategoria(categoria)}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
+import RowActionsMenu from "../../components/Admin/RowActionsMenu";
 import {
   actualizarProducto,
   crearProducto,
@@ -37,7 +38,8 @@ export default function ProductosAdmin() {
   const [categorias, setCategorias] = useState([]);
   const [formulario, setFormulario] = useState(productoVacio);
   const [productoEditando, setProductoEditando] = useState(null);
-  const [productoSeleccionadoId, setProductoSeleccionadoId] = useState(null);
+  const [menuProducto, setMenuProducto] = useState(null);
+  const [menuFilaProductoId, setMenuFilaProductoId] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [vistaProductos, setVistaProductos] = useState("tabla");
   const [terminoBusqueda, setTerminoBusqueda] = useState("");
@@ -57,11 +59,6 @@ export default function ProductosAdmin() {
       producto.marca,
     ].some((valor) => String(valor || "").toLowerCase().includes(termino)));
   }, [productos, terminoBusqueda]);
-  const productoSeleccionado = useMemo(
-    () => productos.find((producto) => producto.id === productoSeleccionadoId) || null,
-    [productos, productoSeleccionadoId]
-  );
-
   async function cargarProductos() {
     setCargando(true);
     setError("");
@@ -73,7 +70,6 @@ export default function ProductosAdmin() {
       ]);
       setProductos(productosData);
       setCategorias(categoriasData.filter((categoria) => categoria.estado));
-      setProductoSeleccionadoId((actual) => (productosData.some((producto) => producto.id === actual) ? actual : null));
     } catch (err) {
       setError(err.response?.data?.mensaje || "No se pudo cargar la lista de productos.");
     } finally {
@@ -83,6 +79,32 @@ export default function ProductosAdmin() {
 
   useEffect(() => {
     cargarProductos();
+  }, []);
+
+  useEffect(() => {
+    function cerrarMenuExterno(event) {
+      if (!event.target.closest(".product-row-menu")) setMenuProducto(null);
+    }
+
+    function manejarTeclado(event) {
+      if (event.key === "Escape") setMenuProducto(null);
+    }
+
+    function cerrarMenuAlMoverPantalla() {
+      setMenuProducto(null);
+    }
+
+    document.addEventListener("pointerdown", cerrarMenuExterno);
+    document.addEventListener("keydown", manejarTeclado);
+    window.addEventListener("resize", cerrarMenuAlMoverPantalla);
+    window.addEventListener("scroll", cerrarMenuAlMoverPantalla, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", cerrarMenuExterno);
+      document.removeEventListener("keydown", manejarTeclado);
+      window.removeEventListener("resize", cerrarMenuAlMoverPantalla);
+      window.removeEventListener("scroll", cerrarMenuAlMoverPantalla, true);
+    };
   }, []);
 
   function handleChange(event) {
@@ -124,27 +146,29 @@ export default function ProductosAdmin() {
     setMostrarFormulario(true);
   }
 
-  function seleccionarProducto(producto) {
-    setProductoSeleccionadoId((actual) => (actual === producto.id ? null : producto.id));
-    setMensaje("");
-    setError("");
-  }
-
-  function limpiarSeleccion() {
-    setProductoSeleccionadoId(null);
-  }
-
   function cambiarBusqueda(valor) {
     setTerminoBusqueda(valor);
-    setProductoSeleccionadoId(null);
+    setMenuProducto(null);
+    setMenuFilaProductoId(null);
   }
 
-  function editarProductoSeleccionado() {
-    if (productoSeleccionado) editarProducto(productoSeleccionado);
+  function alternarMenuProducto(event, productoId) {
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const menuAncho = 144;
+    const menuAlto = 82;
+    const margen = 8;
+    const left = Math.max(margen, Math.min(rect.right - menuAncho, window.innerWidth - menuAncho - margen));
+    const top = rect.bottom + menuAlto + margen <= window.innerHeight
+      ? rect.bottom + 4
+      : Math.max(margen, rect.top - menuAlto - 4);
+
+    setMenuProducto((actual) => actual?.id === productoId ? null : { id: productoId, left, top });
   }
 
-  function borrarProductoSeleccionado() {
-    if (productoSeleccionado) borrarProducto(productoSeleccionado);
+  function ejecutarAccionProducto(accion, producto) {
+    setMenuProducto(null);
+    accion(producto);
   }
 
   function editarProducto(producto) {
@@ -189,7 +213,6 @@ export default function ProductosAdmin() {
         setMensaje("Producto registrado correctamente.");
       }
 
-      setProductoSeleccionadoId(null);
       cerrarFormulario();
       await cargarProductos();
     } catch (err) {
@@ -210,7 +233,6 @@ export default function ProductosAdmin() {
 
     try {
       await eliminarProducto(producto.id);
-      setProductoSeleccionadoId(null);
       setMensaje("Producto eliminado correctamente.");
       await cargarProductos();
     } catch (err) {
@@ -243,15 +265,12 @@ export default function ProductosAdmin() {
               <th>Stock</th>
               <th>Mínimo</th>
               <th>Estado</th>
+              <th className="product-options-heading" aria-label="Opciones"></th>
             </tr>
           </thead>
           <tbody>
             {productosFiltrados.map((producto) => (
-              <tr
-                key={producto.id}
-                className={productoSeleccionadoId === producto.id ? "selected-row" : ""}
-                onClick={() => seleccionarProducto(producto)}
-              >
+              <tr key={producto.id}>
                 <td>{producto.codigo}</td>
                 <td><strong>{producto.nombre}</strong></td>
                 <td>{producto.categoria}</td>
@@ -261,6 +280,16 @@ export default function ProductosAdmin() {
                 <td>{producto.stock}</td>
                 <td>{producto.stockMinimo}</td>
                 <td>{producto.estado ? "Activo" : "Inactivo"}</td>
+                <td className="row-actions-cell">
+                  <RowActionsMenu
+                    itemId={`producto-${producto.id}`}
+                    ariaLabel="Opciones del producto"
+                    isOpen={menuFilaProductoId === producto.id}
+                    onOpenChange={(itemId) => setMenuFilaProductoId(itemId ? producto.id : null)}
+                    onEdit={() => editarProducto(producto)}
+                    onDelete={() => borrarProducto(producto)}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -274,10 +303,10 @@ export default function ProductosAdmin() {
       <div className="products-kanban-grid" onClick={(event) => event.stopPropagation()}>
         {productosFiltrados.map((producto) => (
           <article
-            className={productoSeleccionadoId === producto.id ? "product-kanban-card selected-card" : "product-kanban-card"}
+            className="product-kanban-card"
             key={producto.id}
-            onClick={() => seleccionarProducto(producto)}
           >
+            <div className="product-card-options">{renderMenuProducto(producto)}</div>
             <div className="product-kanban-info">
               <h4>{producto.nombre}</h4>
               <p>
@@ -299,14 +328,47 @@ export default function ProductosAdmin() {
     );
   }
 
+  function renderMenuProducto(producto) {
+    const abierto = menuProducto?.id === producto.id;
+
+    return (
+      <div className="product-row-menu">
+        <button
+          className="product-options-button"
+          type="button"
+          aria-label="Opciones del producto"
+          aria-haspopup="menu"
+          aria-expanded={abierto}
+          aria-controls={`product-menu-${producto.id}`}
+          onClick={(event) => alternarMenuProducto(event, producto.id)}
+        >
+          <span aria-hidden="true">⋮</span>
+        </button>
+        {abierto && (
+          <div
+            className="product-options-menu"
+            id={`product-menu-${producto.id}`}
+            role="menu"
+            style={{ left: menuProducto.left, top: menuProducto.top }}
+          >
+            <button type="button" role="menuitem" onClick={() => ejecutarAccionProducto(editarProducto, producto)}>
+              Editar
+            </button>
+            <button className="danger" type="button" role="menuitem" onClick={() => ejecutarAccionProducto(borrarProducto, producto)}>
+              Eliminar
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
       <AdminNavbar
         usuario={usuario}
         onNewProduct={abrirNuevoProducto}
-        onEditProduct={editarProductoSeleccionado}
-        onDeleteProduct={borrarProductoSeleccionado}
-        productoSeleccionado={Boolean(productoSeleccionado)}
+        showEditDelete={false}
         vistaProductos={vistaProductos}
         onChangeVista={setVistaProductos}
         terminoBusqueda={terminoBusqueda}
@@ -323,10 +385,7 @@ export default function ProductosAdmin() {
         {mensaje && <p className="success-message admin-feedback">{mensaje}</p>}
         {!mostrarFormulario && error && <p className="error-message admin-feedback">{error}</p>}
 
-        <section
-          className={vistaProductos === "kanban" ? "products-kanban-panel" : "productos-admin-list products-only-list"}
-          onClick={limpiarSeleccion}
-        >
+        <section className={vistaProductos === "kanban" ? "products-kanban-panel" : "productos-admin-list products-only-list"}>
           <h3>Productos registrados</h3>
           {cargando && <p>Cargando productos...</p>}
           {!cargando && productos.length === 0 && <p>No hay productos registrados.</p>}

@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
+import RowActionsMenu from "../../components/Admin/RowActionsMenu";
 import {
   obtenerDetalleProductoInventario,
   obtenerMovimientosInventario,
@@ -49,6 +50,7 @@ export default function InventarioAdmin({ modo = "resumen" }) {
   const [formulario, setFormulario] = useState(formularioInicial);
   const [accionActual, setAccionActual] = useState(null);
   const [productoDetalle, setProductoDetalle] = useState(null);
+  const [menuProductoId, setMenuProductoId] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
   const [errorDetalle, setErrorDetalle] = useState("");
   const [terminoBusqueda, setTerminoBusqueda] = useState("");
@@ -150,6 +152,7 @@ export default function InventarioAdmin({ modo = "resumen" }) {
     setTerminoBusqueda("");
     setAccionActual(null);
     setProductoDetalle(null);
+    setMenuProductoId(null);
     setFormulario(formularioInicial);
     setMensaje("");
     cargarInventario();
@@ -199,6 +202,11 @@ export default function InventarioAdmin({ modo = "resumen" }) {
     setProductoDetalle(null);
     setErrorDetalle("");
     setCargandoDetalle(false);
+  }
+
+  function cambiarBusqueda(valor) {
+    setTerminoBusqueda(valor);
+    setMenuProductoId(null);
   }
 
   function handleChange(event) {
@@ -266,7 +274,7 @@ export default function InventarioAdmin({ modo = "resumen" }) {
       <AdminNavbar
         usuario={usuario}
         terminoBusqueda={terminoBusqueda}
-        onSearchChange={setTerminoBusqueda}
+        onSearchChange={cambiarBusqueda}
         totalProductos={esResumen ? 0 : datosFiltrados.length}
         sectionTitle="Inventario"
         searchFilter={tituloPantalla}
@@ -346,7 +354,7 @@ export default function InventarioAdmin({ modo = "resumen" }) {
 
   function renderProductosDetalleTable() {
     return (
-      <table className="admin-table products-table inventory-table selectable-table">
+      <table className="admin-table products-table inventory-table">
         <thead>
           <tr>
             <th>Código</th>
@@ -356,11 +364,12 @@ export default function InventarioAdmin({ modo = "resumen" }) {
             <th>Stock</th>
             <th>Mínimo</th>
             <th>Estado</th>
+            <th className="row-actions-heading" aria-label="Opciones"></th>
           </tr>
         </thead>
         <tbody>
           {datosFiltrados.map((producto) => (
-            <tr key={producto.id} onClick={() => abrirDetalleProducto(producto.id)}>
+            <tr key={producto.id}>
               <td>{producto.codigo}</td>
               <td><strong>{producto.nombre}</strong></td>
               <td>{producto.categoria}</td>
@@ -368,6 +377,17 @@ export default function InventarioAdmin({ modo = "resumen" }) {
               <td className={producto.stock <= producto.stockMinimo ? "inventory-negative" : ""}>{producto.stock}</td>
               <td>{producto.stockMinimo}</td>
               <td>{producto.estado ? "Activo" : "Inactivo"}</td>
+              <td className="row-actions-cell">
+                <RowActionsMenu
+                  itemId={`inventario-producto-${producto.id}`}
+                  ariaLabel={`Opciones del producto ${producto.nombre}`}
+                  isOpen={menuProductoId === producto.id}
+                  onOpenChange={(itemId) => setMenuProductoId(itemId ? producto.id : null)}
+                  actions={[
+                    { label: "Ver detalle", onClick: () => abrirDetalleProducto(producto.id) },
+                  ]}
+                />
+              </td>
             </tr>
           ))}
         </tbody>
