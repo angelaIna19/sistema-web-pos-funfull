@@ -36,6 +36,7 @@ PGUSER=postgres
 PGPASSWORD=postgres
 ADMIN_USER=admin
 ADMIN_PASSWORD=admin123
+CORS_ORIGIN=http://localhost:5173
 ```
 
 O usar una URL completa:
@@ -45,6 +46,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/funfull_pos
 PORT=3001
 ADMIN_USER=admin
 ADMIN_PASSWORD=admin123
+CORS_ORIGIN=http://localhost:5173
 ```
 
 `ADMIN_USER` y `ADMIN_PASSWORD` crean el primer administrador únicamente cuando la tabla está vacía. Cambia los valores predeterminados en cualquier entorno compartido o productivo.
@@ -59,7 +61,7 @@ CREATE DATABASE funfull_pos;
 
 Al arrancar, `src/database/initDb.js` crea o actualiza las tablas necesarias y registra el administrador inicial. Las entidades principales son administradores, productos, categorías, cajas, movimientos de caja, ventas, detalles de venta y movimientos de inventario.
 
-El archivo `db/schema.sql` es una referencia parcial. La inicialización vigente está en `src/database/initDb.js`.
+El archivo `db/schema.sql` es una referencia parcial. La inicialización vigente está en `src/database/initDb.js`. Si una tabla existente no coincide con el esquema esperado, el inicio se detiene sin eliminar datos; cualquier cambio posterior debe aplicarse mediante una migración versionada y un respaldo previo.
 
 ## Ejecución
 
@@ -93,7 +95,7 @@ El login devuelve un token que debe enviarse a los endpoints administrativos:
 Authorization: Bearer <token>
 ```
 
-Las sesiones se almacenan en memoria; reiniciar el backend invalida los tokens activos. Tampoco se permite cerrar sesión mientras exista una caja abierta: primero debe cerrarse la caja.
+Las sesiones se almacenan en memoria; reiniciar el backend invalida los tokens activos. Esta limitación es aceptable para una prueba de una sola instancia, pero debe sustituirse por sesiones persistentes antes de escalar o pasar a producción. Tampoco se permite cerrar sesión mientras exista una caja abierta: primero debe cerrarse la caja.
 
 ## Endpoints principales
 
@@ -153,9 +155,9 @@ backend/
 
 ## Problemas frecuentes
 
-### El servidor inicia sin PostgreSQL
+### El servidor se detiene sin PostgreSQL
 
-El proceso puede quedar escuchando aunque falle la inicialización. Revisa el mensaje de la terminal, las variables `DATABASE_URL` o `PG*`, y confirma que PostgreSQL acepte conexiones.
+El proceso termina con código de error si falla la inicialización. Revisa el mensaje de la terminal, las variables `DATABASE_URL` o `PG*`, y confirma que PostgreSQL acepte conexiones. Docker Compose lo reiniciará cuando corresponda.
 
 ### Respuestas `401`
 

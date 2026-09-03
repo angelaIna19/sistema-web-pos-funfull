@@ -6,9 +6,13 @@ frontend/node_modules/
 frontend/dist/
 
 # Local environment files
+.env
 backend/.env
 frontend/.env
 frontend/.env.local
+
+# Local deployment data
+backups/
 
 # Logs and operating-system files
 *.log

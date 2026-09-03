@@ -1,6 +1,7 @@
 ﻿const express = require("express");
 const cors = require("cors");
 const { query } = require("./config/db");
+const env = require("./config/env");
 const authRoutes = require("./modules/auth/auth.routes");
 const productRoutes = require("./modules/products/product.routes");
 const categoryRoutes = require("./modules/categories/category.routes");
@@ -12,7 +13,13 @@ const userRoutes = require("./modules/users/user.routes");
 
 const app = express();
 
-app.use(cors());
+app.disable("x-powered-by");
+app.use(cors({
+  origin(origin, callback) {
+    const allowed = !origin || env.corsOrigins.includes(origin);
+    callback(null, allowed);
+  },
+}));
 app.use(express.json({ limit: "10mb" }));
 
 app.get("/", (req, res) => {

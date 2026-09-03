@@ -46,7 +46,10 @@ async function initProductsTable() {
   const hasCurrentSchema = requiredColumns.every((column) => columns.includes(column));
 
   if (tableExists && !hasCurrentSchema) {
-    await query("DROP TABLE productos");
+    const missingColumns = requiredColumns.filter((column) => !columns.includes(column));
+    throw new Error(
+      `La tabla productos requiere una migracion versionada. Columnas faltantes: ${missingColumns.join(", ")}`
+    );
   }
 
   await query(`

@@ -10,7 +10,5 @@ initDb()
   })
   .catch((error) => {
     console.error("No se pudo inicializar PostgreSQL:", error.message);
-    app.listen(env.port, () => {
-      console.log(`Servidor iniciado sin conexión a PostgreSQL en http://localhost:${env.port}`);
-    });
+    process.exit(1);
   });

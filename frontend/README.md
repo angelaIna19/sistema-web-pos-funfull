@@ -30,10 +30,10 @@ npm install
 La aplicación usa esta variable de entorno opcional:
 
 ```env
-VITE_API_URL=http://localhost:3001/api
+VITE_API_URL=/api
 ```
 
-Puede guardarse en `frontend/.env`. Si no está definida, se utiliza automáticamente `http://localhost:3001/api`.
+Puede guardarse en `frontend/.env`. Si no está definida, se utiliza automáticamente `/api`, que permite que Nginx publique frontend y API bajo el mismo origen. Para desarrollo sin proxy puedes establecer `http://localhost:3001/api`.
 
 ## Ejecución
 
