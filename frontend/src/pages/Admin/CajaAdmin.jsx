@@ -2,6 +2,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import { abrirCaja, cerrarCaja, obtenerCajaActual, obtenerCajas, obtenerCajasArchivadas } from "../../services/api";
+import { validarAperturaCaja } from "../../services/cashRegisterValidation";
 
 const formularioInicial = {
   nombreTrabajador: "",
@@ -134,6 +135,12 @@ export default function CajaAdmin({ modo = "actual" }) {
 
   async function guardarAperturaCaja(event) {
     event.preventDefault();
+    const errorValidacion = validarAperturaCaja(formulario);
+    if (errorValidacion) {
+      setError(errorValidacion);
+      return;
+    }
+
     setGuardando(true);
     setMensaje("");
     setError("");
@@ -321,12 +328,33 @@ export default function CajaAdmin({ modo = "actual" }) {
           <form className="producto-form compact-product-form cash-form" onSubmit={guardarAperturaCaja}>
             <label className="full-field">
               Nombre del trabajador
-              <input name="nombreTrabajador" value={formulario.nombreTrabajador} onChange={handleChange} required autoFocus />
+              <input
+                name="nombreTrabajador"
+                value={formulario.nombreTrabajador}
+                onChange={handleChange}
+                maxLength="120"
+                title="Ingrese un nombre formado por letras y espacios."
+                required
+                autoFocus
+              />
             </label>
 
             <label className="full-field">
-              Monto inicial
-              <input name="montoInicial" type="number" min="0" step="0.01" value={formulario.montoInicial} onChange={handleChange} required />
+              Monto inicial (USD)
+              <div className="currency-input">
+                <span aria-hidden="true">$</span>
+                <input
+                  name="montoInicial"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  value={formulario.montoInicial}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </label>
 
             <label className="full-field">

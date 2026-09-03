@@ -2012,32 +2012,70 @@ footer {
   min-width: 48px;
   padding-left: 4px;
   padding-right: 8px;
-  text-align: right;
+  text-align: center;
+  vertical-align: middle;
+}
+
+td.row-actions-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:has(> td.row-actions-cell) > td {
+  vertical-align: middle;
 }
 
 .row-actions-trigger {
-  display: inline-flex;
+  width: 100%;
+  min-height: 38px;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .row-actions-button {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #334155;
+  color: #1f2937;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 800;
   line-height: 1;
 }
 
 .row-actions-button:hover,
-.row-actions-button:focus-visible,
 .row-actions-button[aria-expanded="true"] {
+  background: #e9edf2;
+  color: #0f172a;
+}
+
+.row-actions-button:focus-visible {
   background: #eef2f7;
+  outline: 2px solid #64748b;
+  outline-offset: 1px;
+}
+
+.row-actions-button span {
+  display: block;
+  width: 3px;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
+  color: inherit;
+  font-size: 0;
+  line-height: 0;
+}
+
+.row-actions-button:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -2183,6 +2221,29 @@ footer {
   min-height: 32px;
   padding: 6px 8px;
   font-size: 13px;
+}
+
+.compact-product-form .currency-input {
+  position: relative;
+  width: 100%;
+}
+
+.compact-product-form .currency-input span {
+  position: absolute;
+  top: 50%;
+  left: 9px;
+  z-index: 1;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.compact-product-form .currency-input input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 24px;
 }
 
 .compact-product-form .full-field {
@@ -3371,6 +3432,19 @@ footer {
   color: #0f4fa8;
 }
 
+.pos-ticket-row.stock-error-row,
+.pos-ticket-row.stock-error-row:hover,
+.pos-ticket-row.stock-error-row.selected-ticket-row {
+  background: #fff1f2;
+  box-shadow: inset 4px 0 0 #c8102e;
+}
+
+.pos-ticket-row.stock-error-row strong,
+.pos-ticket-row.stock-error-row span,
+.pos-ticket-row.stock-error-row b {
+  color: #991b1b;
+}
+
 .pos-error-message {
   position: relative;
   z-index: 2;
@@ -4130,6 +4204,45 @@ footer {
   font-weight: 900;
 }
 
+.cash-box-sales-summary td {
+  border-bottom: 0;
+  background: #fff;
+}
+
+.cash-box-sales-summary .cash-box-summary-spacer td {
+  height: 16px;
+  padding: 0;
+}
+
+.cash-box-sales-summary .cash-box-summary-heading td {
+  padding-top: 6px;
+  padding-bottom: 8px;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cash-box-summary-label {
+  color: #344054;
+  font-weight: 400;
+}
+
+.cash-box-summary-value {
+  color: #111827;
+  white-space: nowrap;
+}
+
+.cash-box-summary-total td:nth-last-child(-n + 2) {
+  padding-top: 10px;
+  border-top: 1px solid #e4e7ec;
+  font-weight: 900;
+}
+
+.cash-box-summary-total .cash-box-summary-value {
+  font-size: 18px;
+}
+
 .sale-detail-note {
   margin: 0;
   padding: 10px 12px;
@@ -4148,6 +4261,7 @@ footer {
     align-items: stretch;
     flex-direction: column;
   }
+
 }
 
 /* Compact sale detail modal */
@@ -4499,8 +4613,13 @@ footer {
 }
 
 .sale-cancelled-row {
-  color: #64748b;
-  background: #f8fafc;
+  color: #475569;
+  background: #fff1f1;
+  box-shadow: inset 3px 0 0 #f3a6a6;
+}
+
+.sales-history-table .sale-cancelled-row:hover {
+  background: #ffe8e8;
 }
 
 .sale-cancelled-row td strong {
@@ -4816,6 +4935,24 @@ footer {
   font: inherit;
 }
 
+.sales-period-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.reports-period-select input[type="date"] {
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: #1e293b;
+  font: inherit;
+}
+
 .orders-report-table td,
 .orders-report-table th {
   text-align: left;
@@ -4825,6 +4962,11 @@ footer {
   .reports-panel-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .sales-period-controls {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 
@@ -5080,6 +5222,32 @@ body:has(.admin-topbar) .clean-admin-topbar .admin-topbar-row.secondary {
   max-width: 100%;
 }
 
+/* Keep both admin toolbars visible without creating a competing scroll container */
+html:has(.admin-topbar),
+body:has(.admin-topbar),
+body:has(.admin-topbar) #root {
+  overflow-x: clip;
+}
+
+body:has(.admin-topbar) .admin-topbar.clean-admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 300;
+}
+
+body:has(.admin-topbar) .admin-topbar-row.primary,
+body:has(.admin-topbar) .admin-topbar-row.secondary {
+  position: relative;
+}
+
+body:has(.admin-topbar) .admin-topbar-row.primary {
+  z-index: 2;
+}
+
+body:has(.admin-topbar) .admin-topbar-row.secondary {
+  z-index: 1;
+}
+
 /* POS also needs full workspace width when admin navbar is not mounted */
 body:has(.pos-sale-topbar) #root {
   width: 100%;
@@ -5094,6 +5262,60 @@ body:has(.pos-sale-topbar) .admin-page.sales-page {
   max-width: 100%;
   margin-left: 0;
   margin-right: 0;
+}
+
+/* Keep POS totals and actions visible while only ticket lines scroll */
+.pos-sale-topbar + .sales-page .pos-ticket-panel {
+  height: calc(100dvh - 38px);
+  min-height: 520px;
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  overflow: hidden;
+}
+
+.pos-ticket-list-section {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.pos-ticket-list-header {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border: 1px solid #e4e7ec;
+  border-bottom: 0;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pos-ticket-list-header strong {
+  min-width: 24px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #eef1f5;
+  color: #111827;
+  text-align: center;
+  font-size: 12px;
+}
+
+.pos-ticket-list-section .pos-ticket-list {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+@media (max-width: 900px) {
+  .pos-sale-topbar + .sales-page .pos-ticket-panel {
+    height: calc(100dvh - 38px);
+    min-height: 520px;
+  }
 }
 
 /* More compact secondary admin toolbar */

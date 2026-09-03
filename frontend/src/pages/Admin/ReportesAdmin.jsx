@@ -21,14 +21,28 @@ const PERIODOS_VENTAS = [
   { value: "semana", label: "Semana actual" },
   { value: "quincena", label: "Quincena actual" },
   { value: "mes", label: "Mes actual" },
+  { value: "mes-anterior", label: "Mes anterior" },
+  { value: "personalizado", label: "Personalizado" },
   { value: "todo", label: "Todo" },
 ];
+
+function formatDateInput(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+const FECHA_ACTUAL = formatDateInput(new Date());
+const INICIO_ANIO_ACTUAL = `${new Date().getFullYear()}-01-01`;
 
 export default function ReportesAdmin({ modo = "ventas" }) {
   const navigate = useNavigate();
   const usuario = useMemo(() => localStorage.getItem("adminUsuario") || "admin", []);
   const [reporteVentas, setReporteVentas] = useState(null);
   const [periodoVentas, setPeriodoVentas] = useState("mes");
+  const [ventasDesde, setVentasDesde] = useState("");
+  const [ventasHasta, setVentasHasta] = useState("");
   const [reporteCaja, setReporteCaja] = useState(null);
   const [cajas, setCajas] = useState([]);
   const [cajaSeleccionadaId, setCajaSeleccionadaId] = useState("");
@@ -104,7 +118,7 @@ export default function ReportesAdmin({ modo = "ventas" }) {
     cargarReporte();
     // The report loader intentionally follows these report controls.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modo, periodoVentas, periodoOrdenes, cajaSeleccionadaId]);
+  }, [modo, periodoVentas, ventasDesde, ventasHasta, periodoOrdenes, cajaSeleccionadaId]);
 
   async function cargarReporte() {
     setCargando(true);
@@ -112,7 +126,28 @@ export default function ReportesAdmin({ modo = "ventas" }) {
 
     try {
       if (esVentas) {
-        const data = await obtenerReporteVentas(periodoVentas);
+        if (periodoVentas === "personalizado" && (!ventasDesde || !ventasHasta)) {
+          setReporteVentas(null);
+          setError("Seleccione las fechas Desde y Hasta.");
+          return;
+        }
+
+        if (periodoVentas === "personalizado" && ventasDesde > ventasHasta) {
+          setReporteVentas(null);
+          setError("La fecha Desde no puede ser posterior a la fecha Hasta.");
+          return;
+        }
+
+        if (
+          periodoVentas === "personalizado"
+          && (ventasDesde < INICIO_ANIO_ACTUAL || ventasHasta > FECHA_ACTUAL)
+        ) {
+          setReporteVentas(null);
+          setError(`El período personalizado solo permite fechas del año ${new Date().getFullYear()} hasta hoy.`);
+          return;
+        }
+
+        const data = await obtenerReporteVentas(periodoVentas, ventasDesde || undefined, ventasHasta || undefined);
         setReporteVentas(data);
         limpiarReportesSecundarios();
       }
@@ -222,14 +257,42 @@ export default function ReportesAdmin({ modo = "ventas" }) {
             <h2>{tituloPantalla}</h2>
           </div>
           {esVentas && (
-            <label className="reports-period-select">
-              Período
-              <select value={periodoVentas} onChange={(event) => setPeriodoVentas(event.target.value)}>
-                {PERIODOS_VENTAS.map((periodo) => (
-                  <option key={periodo.value} value={periodo.value}>{periodo.label}</option>
-                ))}
-              </select>
-            </label>
+            <div className="sales-period-controls">
+              <label className="reports-period-select">
+                Período
+                <select value={periodoVentas} onChange={(event) => setPeriodoVentas(event.target.value)}>
+                  {PERIODOS_VENTAS.map((periodo) => (
+                    <option key={periodo.value} value={periodo.value}>{periodo.label}</option>
+                  ))}
+                </select>
+              </label>
+              {periodoVentas === "personalizado" && (
+                <>
+                  <label className="reports-period-select">
+                    Desde
+                    <input
+                      type="date"
+                      value={ventasDesde}
+                      min={INICIO_ANIO_ACTUAL}
+                      max={ventasHasta || FECHA_ACTUAL}
+                      onChange={(event) => setVentasDesde(event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="reports-period-select">
+                    Hasta
+                    <input
+                      type="date"
+                      value={ventasHasta}
+                      min={ventasDesde || INICIO_ANIO_ACTUAL}
+                      max={FECHA_ACTUAL}
+                      onChange={(event) => setVentasHasta(event.target.value)}
+                      required
+                    />
+                  </label>
+                </>
+              )}
+            </div>
           )}
         </header>
 
@@ -277,7 +340,9 @@ export default function ReportesAdmin({ modo = "ventas" }) {
   function renderReporteVentas() {
     const resumen = reporteVentas?.resumen || {};
     const metodos = reporteVentas?.metodosPago || [];
-    const periodoSeleccionado = PERIODOS_VENTAS.find((periodo) => periodo.value === periodoVentas)?.label || "Mes actual";
+    const periodoSeleccionado = periodoVentas === "personalizado"
+      ? `${formatDateOnly(ventasDesde)} - ${formatDateOnly(ventasHasta)}`
+      : PERIODOS_VENTAS.find((periodo) => periodo.value === periodoVentas)?.label || "Mes actual";
     const cards = [
       { label: "Ventas registradas", value: formatNumber(resumen.ventasRegistradas) },
       { label: "Ventas anuladas", value: formatNumber(resumen.ventasAnuladas), tone: "danger" },
@@ -449,20 +514,31 @@ export default function ReportesAdmin({ modo = "ventas" }) {
                   </tr>
                 ))}
               </tbody>
+              <tfoot className="cash-box-sales-summary">
+                <tr className="cash-box-summary-spacer"><td colSpan="4"></td></tr>
+                <tr className="cash-box-summary-heading">
+                  <td colSpan="2"></td>
+                  <td>Resumen general</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colSpan="2"></td>
+                  <td className="cash-box-summary-label">Subtotal</td>
+                  <td className="cash-box-summary-value">{formatMoney(resumen.totalProductos)}</td>
+                </tr>
+                <tr>
+                  <td colSpan="2"></td>
+                  <td className="cash-box-summary-label">IVA</td>
+                  <td className="cash-box-summary-value">{formatMoney(totalImpuesto)}</td>
+                </tr>
+                <tr className="cash-box-summary-total">
+                  <td colSpan="2"></td>
+                  <td className="cash-box-summary-label">Total</td>
+                  <td className="cash-box-summary-value">{formatMoney(resumen.totalVendido)}</td>
+                </tr>
+              </tfoot>
             </table>
           )}
-        </div>
-
-        <div className="cash-box-report-details cash-box-product-totals screen-only">
-          <span>Subtotal: <strong>{formatMoney(resumen.totalProductos)}</strong></span>
-          <span>Impuesto: <strong>{formatMoney(totalImpuesto)}</strong></span>
-          <span>Total vendido: <strong>{formatMoney(resumen.totalVendido)}</strong></span>
-        </div>
-
-        <div className="report-print-totals print-only">
-          <div><span>Subtotal</span><strong>{formatMoney(resumen.totalProductos)}</strong></div>
-          <div><span>Impuesto</span><strong>{formatMoney(totalImpuesto)}</strong></div>
-          <div><span>Total vendido</span><strong>{formatMoney(resumen.totalVendido)}</strong></div>
         </div>
       </>
     );
@@ -621,6 +697,12 @@ function formatDateTime(value) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+}
+
+function formatDateOnly(value) {
+  if (!value) return "-";
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 

@@ -11,10 +11,10 @@ async function cashBoxSales(req, res) {
 
 async function sales(req, res) {
   try {
-    const reporte = await reportService.salesReport(req.query.periodo);
+    const reporte = await reportService.salesReport(req.query.periodo, req.query.desde, req.query.hasta);
     res.json(reporte);
   } catch (error) {
-    res.status(503).json({ mensaje: "No se pudo cargar el reporte de ventas." });
+    res.status(error.status || 503).json({ mensaje: error.status ? error.message : "No se pudo cargar el reporte de ventas." });
   }
 }
 

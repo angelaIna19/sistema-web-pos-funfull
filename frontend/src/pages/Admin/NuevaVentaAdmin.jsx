@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import {
   abrirCaja,
@@ -8,6 +9,7 @@ import {
   registrarMovimientoCaja,
   registrarVenta,
 } from "../../services/api";
+import { validarAperturaCaja } from "../../services/cashRegisterValidation";
 
 const formularioInicial = {
   nombreTrabajador: "",
@@ -29,12 +31,14 @@ const movimientoInicial = {
 
 export default function NuevaVentaAdmin() {
   const navigate = useNavigate();
+  const listaVentaRef = useRef(null);
   const usuario = useMemo(() => localStorage.getItem("adminUsuario") || "admin", []);
   const [caja, setCaja] = useState(null);
   const [productos, setProductos] = useState([]);
   const [terminoProducto, setTerminoProducto] = useState("");
   const [itemsVenta, setItemsVenta] = useState([]);
   const [itemSeleccionadoId, setItemSeleccionadoId] = useState(null);
+  const [itemStockInsuficienteId, setItemStockInsuficienteId] = useState(null);
   const [cantidadPendiente, setCantidadPendiente] = useState("");
   const [formulario, setFormulario] = useState(formularioInicial);
   const [pago, setPago] = useState(pagoInicial);
@@ -80,6 +84,27 @@ export default function NuevaVentaAdmin() {
     ? roundMoney(montoRecibido - totalAPagar)
     : 0;
   const puedeConfirmarPago = itemsVenta.length > 0 && Number.isFinite(montoRecibido) && montoRecibido >= totalAPagar;
+
+  useEffect(() => {
+    if (!itemSeleccionadoId || !listaVentaRef.current) return undefined;
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      const lista = listaVentaRef.current;
+      const filaSeleccionada = lista?.querySelector(`[data-ticket-item-id="${itemSeleccionadoId}"]`);
+      if (!lista || !filaSeleccionada) return;
+
+      const listaRect = lista.getBoundingClientRect();
+      const filaRect = filaSeleccionada.getBoundingClientRect();
+
+      if (filaRect.top < listaRect.top) {
+        lista.scrollTop -= listaRect.top - filaRect.top;
+      } else if (filaRect.bottom > listaRect.bottom) {
+        lista.scrollTop += filaRect.bottom - listaRect.bottom;
+      }
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [itemSeleccionadoId, itemsVenta.length]);
 
   async function consultarCajaActual() {
     setCargando(true);
@@ -150,6 +175,7 @@ export default function NuevaVentaAdmin() {
   function iniciarNuevaVenta() {
     setItemsVenta([]);
     setItemSeleccionadoId(null);
+    setItemStockInsuficienteId(null);
     setCantidadPendiente("");
     setPago(pagoInicial);
     setMostrarPago(false);
@@ -240,12 +266,15 @@ export default function NuevaVentaAdmin() {
 
     const cantidad = Number(cantidadTexto);
     if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      setItemStockInsuficienteId(null);
       setError("La cantidad debe ser un número entero mayor a 0.");
       return false;
     }
 
     if (cantidad > item.stock) {
-      setError(`Stock insuficiente. Solo hay ${item.stock} unidades disponibles.`);
+      setItemSeleccionadoId(item.id);
+      setItemStockInsuficienteId(item.id);
+      setError(`Stock insuficiente para «${item.nombre}». Solo hay ${item.stock} unidades disponibles.`);
       return false;
     }
 
@@ -253,6 +282,7 @@ export default function NuevaVentaAdmin() {
       producto.id === itemId ? { ...producto, cantidad } : producto
     )));
     setCantidadPendiente("");
+    setItemStockInsuficienteId(null);
     setError("");
     return true;
   }
@@ -282,7 +312,9 @@ export default function NuevaVentaAdmin() {
       const existente = actual.find((item) => item.id === producto.id);
       if (existente) {
         if (existente.cantidad >= producto.stock) {
-          setError(`No se puede agregar más de ${producto.stock} unidades de ${producto.nombre}.`);
+          setItemSeleccionadoId(producto.id);
+          setItemStockInsuficienteId(producto.id);
+          setError(`Stock insuficiente para «${producto.nombre}». Solo hay ${producto.stock} unidades disponibles.`);
           return actual;
         }
 
@@ -307,8 +339,12 @@ export default function NuevaVentaAdmin() {
   function eliminarItemSeleccionado() {
     if (!itemSeleccionado) return;
 
-    setItemsVenta((actual) => actual.filter((item) => item.id !== itemSeleccionado.id));
-    setItemSeleccionadoId(null);
+    setItemsVenta((actual) => {
+      const restantes = actual.filter((item) => item.id !== itemSeleccionado.id);
+      setItemSeleccionadoId(restantes.at(-1)?.id ?? null);
+      return restantes;
+    });
+    setItemStockInsuficienteId(null);
     setCantidadPendiente("");
     setError("");
   }
@@ -318,9 +354,19 @@ export default function NuevaVentaAdmin() {
 
     setCantidadPendiente((actual) => {
       const siguiente = `${actual}${numero}`.replace(/^0+(?=\d)/, "");
-      return siguiente.slice(0, 4);
+      const cantidadLimitada = siguiente.slice(0, 4);
+      const cantidad = Number(cantidadLimitada);
+
+      if (Number.isInteger(cantidad) && cantidad > 0 && cantidad <= itemSeleccionado.stock) {
+        setItemStockInsuficienteId(null);
+        setError("");
+      } else if (cantidad > itemSeleccionado.stock) {
+        setItemStockInsuficienteId(itemSeleccionado.id);
+        setError(`Stock insuficiente para «${itemSeleccionado.nombre}». Solo hay ${itemSeleccionado.stock} unidades disponibles.`);
+      }
+
+      return cantidadLimitada;
     });
-    setError("");
   }
 
   function aplicarCantidadPendiente() {
@@ -331,6 +377,7 @@ export default function NuevaVentaAdmin() {
   function limpiarCantidadPendiente() {
     if (!itemSeleccionado) return;
     setCantidadPendiente("");
+    setItemStockInsuficienteId(null);
     setError("");
   }
 
@@ -390,6 +437,12 @@ export default function NuevaVentaAdmin() {
 
   async function guardarAperturaCaja(event) {
     event.preventDefault();
+    const errorValidacion = validarAperturaCaja(formulario);
+    if (errorValidacion) {
+      setError(errorValidacion);
+      return;
+    }
+
     setGuardando(true);
     setMensaje("");
     setError("");
@@ -500,20 +553,27 @@ export default function NuevaVentaAdmin() {
         {!cargando && caja && !vistaCaja && (
           <section className="pos-sale-screen" aria-label="Registro de nueva venta">
             <aside className="pos-ticket-panel">
-              <div className="pos-ticket-list">
-                {itemsVenta.length === 0 && <p className="pos-ticket-empty">Seleccione productos para la venta.</p>}
-                {itemsVenta.map((item) => (
-                  <button
-                    className={itemSeleccionadoId === item.id ? "pos-ticket-row selected-ticket-row" : "pos-ticket-row"}
-                    type="button"
-                    key={item.id}
-                    onClick={() => seleccionarItem(item.id)}
-                  >
-                    <span>{itemSeleccionadoId === item.id && cantidadPendiente ? cantidadPendiente : item.cantidad}</span>
-                    <strong>{item.nombre}</strong>
-                    <b>${(item.cantidad * item.precioVenta).toFixed(2)}</b>
-                  </button>
-                ))}
+              <div className="pos-ticket-list-section">
+                <div className="pos-ticket-list-header">
+                  <span>Productos</span>
+                  <strong>{itemsVenta.length}</strong>
+                </div>
+                <div className="pos-ticket-list" ref={listaVentaRef}>
+                  {itemsVenta.length === 0 && <p className="pos-ticket-empty">Seleccione productos para la venta.</p>}
+                  {itemsVenta.map((item) => (
+                    <button
+                      className={getTicketRowClass(item.id, itemSeleccionadoId, itemStockInsuficienteId)}
+                      type="button"
+                      key={item.id}
+                      data-ticket-item-id={item.id}
+                      onClick={() => seleccionarItem(item.id)}
+                    >
+                      <span>{itemSeleccionadoId === item.id && cantidadPendiente ? cantidadPendiente : item.cantidad}</span>
+                      <strong>{item.nombre}</strong>
+                      <b>${(item.cantidad * item.precioVenta).toFixed(2)}</b>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="pos-ticket-total">
@@ -576,11 +636,13 @@ export default function NuevaVentaAdmin() {
                         className="pos-product-card"
                         type="button"
                         key={producto.id}
+                        title={producto.nombre}
+                        aria-label={`Agregar ${producto.nombre} a la venta`}
                         onClick={() => agregarProducto(producto)}
                         disabled={producto.stock <= 0}
                       >
                         <img src={producto.imagen} alt={producto.nombre} />
-                        <span>{producto.nombre}</span>
+                        <span title={producto.nombre}>{producto.nombre}</span>
                         {itemEnVenta && <strong>{itemEnVenta.cantidad}</strong>}
                       </button>
                     );
@@ -603,12 +665,33 @@ export default function NuevaVentaAdmin() {
             <form className="producto-form compact-product-form cash-form" onSubmit={guardarAperturaCaja}>
               <label className="full-field">
                 Nombre del trabajador
-                <input name="nombreTrabajador" value={formulario.nombreTrabajador} onChange={handleChange} required autoFocus />
+                <input
+                  name="nombreTrabajador"
+                  value={formulario.nombreTrabajador}
+                  onChange={handleChange}
+                  maxLength="120"
+                  title="Ingrese un nombre formado por letras y espacios."
+                  required
+                  autoFocus
+                />
               </label>
 
               <label className="full-field">
-                Monto inicial
-                <input name="montoInicial" type="number" min="0" step="0.01" value={formulario.montoInicial} onChange={handleChange} required />
+                Monto inicial (USD)
+                <div className="currency-input">
+                  <span aria-hidden="true">$</span>
+                  <input
+                    name="montoInicial"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    value={formulario.montoInicial}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </label>
 
               <label className="full-field">
@@ -724,6 +807,13 @@ export default function NuevaVentaAdmin() {
 function formatDate(value) {
   if (!value) return "-";
   return new Intl.DateTimeFormat("es-EC", { month: "short", day: "2-digit" }).format(new Date(value));
+}
+
+function getTicketRowClass(itemId, itemSeleccionadoId, itemStockInsuficienteId) {
+  const clases = ["pos-ticket-row"];
+  if (itemSeleccionadoId === itemId) clases.push("selected-ticket-row");
+  if (itemStockInsuficienteId === itemId) clases.push("stock-error-row");
+  return clases.join(" ");
 }
 
 function roundMoney(value) {

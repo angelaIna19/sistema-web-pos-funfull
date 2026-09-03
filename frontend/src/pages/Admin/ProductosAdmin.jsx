@@ -434,13 +434,19 @@ export default function ProductosAdmin() {
               </label>
 
               <label>
-                Precio de compra
-                <input name="precioCompra" type="number" min="0" step="0.01" value={formulario.precioCompra} onChange={handleChange} required />
+                Precio de compra (USD)
+                <div className="currency-input">
+                  <span aria-hidden="true">$</span>
+                  <input name="precioCompra" type="number" min="0" step="0.01" inputMode="decimal" placeholder="0.00" value={formulario.precioCompra} onChange={handleChange} required />
+                </div>
               </label>
 
               <label>
-                Precio de venta
-                <input name="precioVenta" type="number" min="0" step="0.01" value={formulario.precioVenta} onChange={handleChange} required />
+                Precio de venta (USD)
+                <div className="currency-input">
+                  <span aria-hidden="true">$</span>
+                  <input name="precioVenta" type="number" min="0" step="0.01" inputMode="decimal" placeholder="0.00" value={formulario.precioVenta} onChange={handleChange} required />
+                </div>
               </label>
 
               <label>

@@ -219,10 +219,10 @@ export async function registrarAjusteInventario(datos) {
   });
   return respuesta.data;
 }
-export async function obtenerReporteVentas(periodo = "mes") {
+export async function obtenerReporteVentas(periodo = "mes", desde, hasta) {
   const respuesta = await axios.get(`${API_URL}/admin/reportes/ventas`, {
     headers: getAuthHeaders(),
-    params: { periodo },
+    params: { periodo, desde, hasta },
   });
   return respuesta.data;
 }

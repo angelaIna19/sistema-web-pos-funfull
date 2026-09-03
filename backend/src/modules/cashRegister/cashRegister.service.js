@@ -1,5 +1,8 @@
 ﻿const cashRegisterRepository = require("./cashRegister.repository");
 
+const NOMBRE_TRABAJADOR_PATTERN = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?:\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/;
+const MONTO_PATTERN = /^\d+(?:\.\d{1,2})?$/;
+
 async function getOpenCashRegister() {
   return cashRegisterRepository.findOpen();
 }
@@ -23,14 +26,14 @@ async function openCashRegister(admin, body) {
   const montoInicial = Number(montoInicialTexto);
   const observacion = body.observacion ? String(body.observacion).trim() : "";
 
-  if (!nombreTrabajador) {
-    const error = new Error("El nombre del trabajador es obligatorio.");
+  if (!NOMBRE_TRABAJADOR_PATTERN.test(nombreTrabajador)) {
+    const error = new Error("Ingrese un nombre válido para el trabajador.");
     error.status = 400;
     throw error;
   }
 
-  if (!montoInicialTexto || !Number.isFinite(montoInicial) || montoInicial < 0) {
-    const error = new Error("El monto inicial es obligatorio y debe ser mayor o igual a 0.");
+  if (!MONTO_PATTERN.test(montoInicialTexto) || !Number.isFinite(montoInicial) || montoInicial < 0) {
+    const error = new Error("El monto inicial debe ser un número mayor o igual a 0, con máximo 2 decimales.");
     error.status = 400;
     throw error;
   }

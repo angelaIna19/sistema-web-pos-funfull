@@ -12,14 +12,17 @@ function getSalesPeriodCondition(periodo) {
       ELSE date_trunc('month', CURRENT_DATE) + INTERVAL '15 days'
     END AND creada_en <= CURRENT_TIMESTAMP`,
     mes: "creada_en BETWEEN date_trunc('month', CURRENT_DATE) AND CURRENT_TIMESTAMP",
+    "mes-anterior": "creada_en >= date_trunc('month', CURRENT_DATE) - INTERVAL '1 month' AND creada_en < date_trunc('month', CURRENT_DATE)",
+    personalizado: "creada_en >= $1::date AND creada_en < $2::date + INTERVAL '1 day'",
     todo: "TRUE",
   };
 
   return conditions[periodo] || conditions.mes;
 }
 
-async function getSalesReport(periodo) {
+async function getSalesReport(periodo, desde, hasta) {
   const periodCondition = getSalesPeriodCondition(periodo);
+  const params = periodo === "personalizado" ? [desde, hasta] : [];
   const summaryResult = await query(
     `SELECT
        COUNT(*) FILTER (WHERE estado = 'REGISTRADA')::int AS ventas_registradas,
@@ -28,7 +31,8 @@ async function getSalesReport(periodo) {
        COALESCE(SUM(impuesto) FILTER (WHERE estado = 'REGISTRADA'), 0)::numeric AS impuesto,
        COALESCE(SUM(total) FILTER (WHERE estado = 'REGISTRADA'), 0)::numeric AS total
      FROM ventas
-     WHERE ${periodCondition}`
+     WHERE ${periodCondition}`,
+    params
   );
 
   const methodsResult = await query(
@@ -41,7 +45,8 @@ async function getSalesReport(periodo) {
      WHERE estado = 'REGISTRADA'
        AND ${periodCondition}
      GROUP BY metodo_pago
-     ORDER BY metodo_pago ASC`
+     ORDER BY metodo_pago ASC`,
+    params
   );
 
   const row = summaryResult.rows[0] || {};
