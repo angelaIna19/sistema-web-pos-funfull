@@ -14,7 +14,7 @@ La aplicación se encuentra desplegada en Docker Compose sobre el droplet `104.2
 - PostgreSQL utiliza un volumen persistente.
 - Hay backups diarios a las `02:15 UTC` (`21:15` de Ecuador) con retención de siete días.
 - Se comprobó la restauración de un backup y el arranque automático después de reiniciar el droplet.
-- El commit desplegado puede consultarse en `/opt/funfull/current-release`.
+- El commit desplegado puede consultarse con `git -C /opt/funfull/app rev-parse --short HEAD`.
 - La auditoría de dependencias terminó con cero vulnerabilidades reportadas por npm.
 
 ## Acceso al droplet
