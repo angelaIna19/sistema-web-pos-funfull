@@ -1,6 +1,6 @@
 # Despliegue en DigitalOcean
 
-Este despliegue usa Docker Compose con tres servicios: PostgreSQL, API Node y Nginx con la SPA React. Solo Nginx publica un puerto del host (`80`). PostgreSQL y la API permanecen en la red interna de Docker.
+Este despliegue usa Docker Compose con tres servicios: PostgreSQL, API Node y Nginx con la SPA React. Nginx publica el puerto `80`; PostgreSQL se enlaza únicamente al loopback del droplet (`127.0.0.1:5432`) para permitir administración mediante un túnel SSH. La API permanece exclusivamente en la red interna de Docker.
 
 > **Advertencia:** `http://104.248.233.51` es un entorno temporal de pruebas. No uses credenciales ni datos reales: HTTP no cifra el usuario, la contraseña ni el token administrativo.
 
