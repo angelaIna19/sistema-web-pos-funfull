@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="620" viewBox="0 0 420 620">
+  <rect width="420" height="620" fill="#f7f3e8"/>
+  <path d="M176 62h68v104c0 24 36 56 36 98v238c0 38-27 58-70 58s-70-20-70-58V264c0-42 36-74 36-98z" fill="#e3bf65" stroke="#b18528" stroke-width="4"/>
+  <rect x="178" y="40" width="64" height="70" rx="8" fill="#8b5c22"/>
+  <rect x="154" y="302" width="112" height="124" rx="8" fill="#f3eee0"/>
+  <text x="210" y="350" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#3a6b3b">TEQUILA</text>
+  <text x="210" y="386" text-anchor="middle" font-family="Arial" font-size="17" fill="#6f4a20">100% AGAVE</text>
+  <text x="210" y="455" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700" fill="#111">750ML</text>
+</svg>

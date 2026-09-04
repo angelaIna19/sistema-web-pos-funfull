@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="620" viewBox="0 0 420 620">
+  <rect width="420" height="620" fill="#eef6ff"/>
+  <path d="M180 62h60v94c0 30 32 64 32 108v236c0 38-24 60-62 60s-62-22-62-60V264c0-44 32-78 32-108z" fill="#badcf5" stroke="#5e9fca" stroke-width="4"/>
+  <rect x="181" y="40" width="58" height="70" rx="8" fill="#2e79a8"/>
+  <rect x="154" y="296" width="112" height="132" rx="9" fill="#fff"/>
+  <text x="210" y="342" text-anchor="middle" font-family="Arial" font-size="19" font-weight="700" fill="#26698f">BEBIDA</text>
+  <text x="210" y="374" text-anchor="middle" font-family="Arial" font-size="16" fill="#26698f">SIN ALCOHOL</text>
+  <text x="210" y="455" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700" fill="#111">MIXER</text>
+</svg>
